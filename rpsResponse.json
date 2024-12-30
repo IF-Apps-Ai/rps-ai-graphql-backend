@@ -1,0 +1,224 @@
+{
+    "detail_mata_kuliah": {
+        "nama": "Dasar Algoritma dan Pemrograman",
+        "kode": "CW6552023109",
+        "rumpun": "Pemrograman dan Algoritma",
+        "sks": 3,
+        "sks_teori": 2,
+        "sks_praktikum": 1,
+        "semester": 1,
+        "tanggal_dibuat": "2023-10-04"
+    },
+    "detail_instruktur": {
+        "pengembang": "Fahrim",
+        "koordinator": "Elon Musk",
+        "ketua_program": "Muhyiddin"
+    },
+    "deskripsi_mata_kuliah": "Mata kuliah ini membahas konsep dasar algoritma dan pemrograman menggunakan pendekatan yang menyenangkan dan aplikatif dengan menggunakan Visual Programming. Siswa akan belajar tentang pemikiran komputasional, pseudocode, flowchart, serta struktur kontrol dalam pemrograman.",
+    "capaian_pembelajaran": {
+        "umum": "Mahasiswa mampu memahami dan menerapkan konsep dasar pemrograman dan algoritma.",
+        "khusus": [
+            "Mahasiswa mampu menjelaskan konsep pemikiran komputasional.",
+            "Mahasiswa mampu menulis pseudocode untuk menyelesaikan masalah dasar.",
+            "Mahasiswa mampu menggambar flowchart untuk menggambarkan alur pemrograman.",
+            "Mahasiswa mampu menerapkan percabangan dan perulangan dalam program sederhana.",
+            "Mahasiswa mampu menggunakan alat pemrograman visual untuk menciptakan aplikasi sederhana."
+        ]
+    },
+    "topik_mingguan": [
+        {
+            "minggu": 1,
+            "topik": "Pengantar Pemrograman",
+            "subtopik": [
+                "Definisi Pemrograman",
+                "Sejarah dan Perkembangan Pemrograman"
+            ],
+            "kegiatan": [
+                "Diskusi",
+                "Tanya jawab"
+            ]
+        },
+        {
+            "minggu": 2,
+            "topik": "Computational Thinking",
+            "subtopik": [
+                "Paradigma Pemikiran Komputasional",
+                "Langkah-langkah Pemecahan Masalah"
+            ],
+            "kegiatan": [
+                "Workshop",
+                "Penerapan dalam Kasus Nyata"
+            ]
+        },
+        {
+            "minggu": 3,
+            "topik": "Pseudocode",
+            "subtopik": [
+                "Pengertian dan Pentingnya Pseudocode",
+                "Latihan Menulis Pseudocode"
+            ],
+            "kegiatan": [
+                "Latihan Individu",
+                "Tugas Kecil"
+            ]
+        },
+        {
+            "minggu": 4,
+            "topik": "Flowchart",
+            "subtopik": [
+                "Simbol-simbol Flowchart",
+                "Membuat Flowchart"
+            ],
+            "kegiatan": [
+                "Workshop Praktis",
+                "Diskusi Kelompok"
+            ]
+        },
+        {
+            "minggu": 5,
+            "topik": "Percabangan",
+            "subtopik": [
+                "If-Else Statement",
+                "Switch Case"
+            ],
+            "kegiatan": [
+                "Latihan Koding",
+                "Studi Kasus"
+            ]
+        },
+        {
+            "minggu": 6,
+            "topik": "Perulangan",
+            "subtopik": [
+                "For Loop",
+                "While Loop"
+            ],
+            "kegiatan": [
+                "Praktikum",
+                "Presentasi Hasil Praktikum"
+            ]
+        },
+        {
+            "minggu": 7,
+            "topik": "Visual Programming with Alice",
+            "subtopik": [
+                "Pengenalan Alice",
+                "Membuat Proyek Sederhana"
+            ],
+            "kegiatan": [
+                "Workshop",
+                "Diskusi Proyek"
+            ]
+        },
+        {
+            "minggu": 8,
+            "topik": "Evaluasi Tengah Semester (UTS)",
+            "subtopik": [
+                "Ujian Tengah Semester"
+            ],
+            "kegiatan": [
+                "UTS"
+            ]
+        },
+        {
+            "minggu": 9,
+            "topik": "Debugging dan Error Handling",
+            "subtopik": [
+                "Pengenalan Kesalahan dalam Kode",
+                "Metode Debugging"
+            ],
+            "kegiatan": [
+                "Praktikum",
+                "Diskusi Teknik Debugging"
+            ]
+        },
+        {
+            "minggu": 10,
+            "topik": "Fungsi dalam Pemrograman",
+            "subtopik": [
+                "Definisi dan Manfaat Fungsi",
+                "Membuat Fungsi Sendiri"
+            ],
+            "kegiatan": [
+                "Latihan Koding",
+                "Tugas Praktikum"
+            ]
+        },
+        {
+            "minggu": 11,
+            "topik": "Struktur Data Dasar",
+            "subtopik": [
+                "Array",
+                "List"
+            ],
+            "kegiatan": [
+                "Workshop",
+                "Penerapan dalam Proyek"
+            ]
+        },
+        {
+            "minggu": 12,
+            "topik": "Pengenalan Objek dan Kelas",
+            "subtopik": [
+                "Konsep OOP",
+                "Membuat Kelas dan Objek"
+            ],
+            "kegiatan": [
+                "Latihan",
+                "Studi Kasus"
+            ]
+        },
+        {
+            "minggu": 13,
+            "topik": "Projek Akhir",
+            "subtopik": [
+                "Perencanaan Projek",
+                "Implementasi"
+            ],
+            "kegiatan": [
+                "Pembentukan Kelompok",
+                "Persiapan Presentasi"
+            ]
+        },
+        {
+            "minggu": 14,
+            "topik": "Presentasi Projek",
+            "subtopik": [
+                "Presentasi Hasil Projek",
+                "Umpan Balik"
+            ],
+            "kegiatan": [
+                "Presentasi",
+                "Diskusi"
+            ]
+        },
+        {
+            "minggu": 15,
+            "topik": "Persiapan Ujian Akhir",
+            "subtopik": [
+                "Revisi Materi",
+                "Latihan Soal"
+            ],
+            "kegiatan": [
+                "Diskusi Belajar",
+                "Latihan Soal"
+            ]
+        },
+        {
+            "minggu": 16,
+            "topik": "Evaluasi Akhir Semester (UAS)",
+            "subtopik": [
+                "Ujian Akhir Semester"
+            ],
+            "kegiatan": [
+                "UAS"
+            ]
+        }
+    ],
+    "komponen_penilaian": {
+        "UTS": 25,
+        "UAS": 30,
+        "Tugas dan Praktikum": 25,
+        "Partisipasi Kelas": 20
+    }
+}
