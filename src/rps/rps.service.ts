@@ -52,9 +52,9 @@ export class RpsService {
     - Komponen penilaian dengan bobot
     - Capaian Pembelajaran Lulusan yang dibebankan pada mata kuliah (CPL)
 `;
-
+    const openAiModel = process.env.OPENAI_MODEL;
     const completion = await this.openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: openAiModel,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
