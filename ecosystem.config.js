@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'RPS-Ai-GraphQL-BE',
-      script: 'dist/main.js',
+      script: 'dist/src/main.js',
       instances: 3,
     },
   ],
