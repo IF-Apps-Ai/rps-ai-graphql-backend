@@ -53,7 +53,7 @@ const KomponenPenilaianSchema = z.object({
 // Model utama
 export const RpsModelSchema = z.object({
   matakuliah: MatakuliahSchema,
-  bahan_kajian: z.array(BahanKajianSchema),
+  bahan_kajian: z.array(z.string()),
   dosen: DosenSchema,
   deskripsi_matakuliah: z.string(),
   capaian_pembelajaran_lulusan: CapaianPembelajaranSchema,

@@ -9,6 +9,6 @@ export class RpsResolver {
 
   @Mutation(() => RpsModel)
   async generateRps(@Args('input') input: GenerateRpsInput): Promise<RpsModel> {
-    return this.rpsService.generateRps(input.prompt);
+    return this.rpsService.generateRps(input);
   }
 }

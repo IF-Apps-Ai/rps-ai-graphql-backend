@@ -59,7 +59,7 @@ class KomponenPenilaian {
 @ObjectType()
 export class RpsModel {
   @Field(() => Matakuliah) matakuliah: Matakuliah;
-  @Field(() => [BahanKajian]) bahan_kajian: BahanKajian[];
+  @Field(() => [String]) bahan_kajian: string[];
   @Field(() => Dosen) dosen: Dosen;
   @Field() deskripsi_matakuliah: string;
   @Field(() => CapaianPembelajaranLulusan)

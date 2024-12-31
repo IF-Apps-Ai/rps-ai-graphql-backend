@@ -3,6 +3,6 @@ import { RpsService } from './rps.service';
 import { RpsResolver } from './rps.resolver';
 
 @Module({
-  providers: [RpsService, RpsResolver]
+  providers: [RpsService, RpsResolver],
 })
 export class RpsModule {}
