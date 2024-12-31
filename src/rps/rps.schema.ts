@@ -15,7 +15,7 @@ const BahanKajianSchema = z.object({
 });
 
 // Submodel untuk "dosen"
-const DosenSchema = z.object({
+const DosenPengembangSchema = z.object({
   dosen_pengampuh: z.array(z.string()),
   koordinator_matakuliah: z.string(),
   ketua_program_studi: z.string(),
@@ -54,7 +54,7 @@ const KomponenPenilaianSchema = z.object({
 export const RpsModelSchema = z.object({
   matakuliah: MatakuliahSchema,
   bahan_kajian: z.array(z.string()),
-  dosen: DosenSchema,
+  dosen_pengembang: DosenPengembangSchema,
   deskripsi_matakuliah: z.string(),
   capaian_pembelajaran_lulusan: CapaianPembelajaranSchema,
   capaian_pembelajaran_matakuliah: CapaianPembelajaranSchema,

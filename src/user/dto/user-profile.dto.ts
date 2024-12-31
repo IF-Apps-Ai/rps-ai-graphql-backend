@@ -6,10 +6,7 @@ export class UserProfile {
   username: string;
 
   @Field({ nullable: true })
-  fullname?: string;
-
-  @Field({ nullable: true })
-  department?: string;
+  name?: string;
 
   @Field({ nullable: true })
   role?: string;

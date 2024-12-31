@@ -10,12 +10,7 @@ class Matakuliah {
 }
 
 @ObjectType()
-class BahanKajian {
-  @Field() topik: string;
-}
-
-@ObjectType()
-class Dosen {
+class DosenPengembang {
   @Field(() => [String]) dosen_pengampuh: string[];
   @Field() koordinator_matakuliah: string;
   @Field() ketua_program_studi: string;
@@ -60,7 +55,7 @@ class KomponenPenilaian {
 export class RpsModel {
   @Field(() => Matakuliah) matakuliah: Matakuliah;
   @Field(() => [String]) bahan_kajian: string[];
-  @Field(() => Dosen) dosen: Dosen;
+  @Field(() => DosenPengembang) dosen_pengembang: DosenPengembang;
   @Field() deskripsi_matakuliah: string;
   @Field(() => CapaianPembelajaranLulusan)
   capaian_pembelajaran_lulusan: CapaianPembelajaranLulusan;

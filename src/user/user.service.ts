@@ -3,24 +3,30 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { DataSource } from 'typeorm';
 import { UserProfile } from './dto/user-profile.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
   private userRepository: Repository<User>;
 
   constructor(
-    @Inject('SIMAK_DATA_SOURCE') // DataSource untuk Database SIMAK
-    private simakDataSource: DataSource,
+    @Inject('DATA_SOURCE') // DataSource untuk Database SIMAK
+    private dataSource: DataSource,
   ) {
-    this.userRepository = this.simakDataSource.getRepository(User);
+    this.userRepository = this.dataSource.getRepository(User);
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const user = this.userRepository.create(createUserDto);
+    return this.userRepository.save(user);
   }
 
   async findOne(username: string): Promise<User | null> {
-    console.log('UserService.findOne', username);
+    // console.log('UserService.findOne', username);
     const result = await this.userRepository.findOne({
       where: { username: username },
     });
-    console.log('UserService.findOne', result);
+    // console.log('UserService.findOne', result);
     return result;
   }
 
@@ -42,8 +48,7 @@ export class UserService {
 
     return {
       username: user.username,
-      fullname: user.fullname,
-      department: user.department,
+      name: user.name,
       role: user.role,
     };
   }

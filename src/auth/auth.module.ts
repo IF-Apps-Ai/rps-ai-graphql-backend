@@ -11,10 +11,12 @@ import { UserService } from '../user/user.service';
 import { UserModule } from '../user/user.module';
 import { AuthResolver } from './auth.resolver';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
+import { DosenModule } from '../dosen/dosen.module';
 
 @Module({
   imports: [
     UserModule,
+    DosenModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
