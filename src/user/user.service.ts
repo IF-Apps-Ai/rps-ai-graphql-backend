@@ -56,4 +56,10 @@ export class UserService {
       role: user.role,
     };
   }
+
+  async updatePassword(user: User): Promise<User> {
+    const updatedUser = await this.usersRepository.save(user);
+    // const { password, ...result } = updatedUser;
+    return updatedUser;
+  }
 }

@@ -15,6 +15,7 @@ import * as bcrypt from 'bcrypt';
 import { SigninUserInput } from './dto/signin-user.input';
 import { User } from '../user/entities/user.entity';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -43,14 +44,18 @@ export class AuthService {
         user.name = dosen.nama;
         user.email = dosen.email;
         user.phone = dosen.hp;
+        user.role = 'dosen';
+        user.isActive = true;
         await this.userService.create(user);
 
         // Call validateUser again with the new user
         return this.validateUser(username, passwd, true);
       }
     }
-    if (!user) {
-      throw new UnauthorizedException('User not found');
+    if (!user || !user.isActive) {
+      throw new UnauthorizedException(
+        'User account is inactive or does not exist',
+      );
     }
 
     if (!passwd) {
@@ -69,16 +74,7 @@ export class AuthService {
       isMatch = hashedInputPassword === dosen.pwd;
     } else {
       // Compare the input password with the stored bcrypt hashed password
-      console.log('Comparing password');
-      console.log('Provided password: ', passwd);
-      console.log('Stored hashed password: ', user.password);
-      isMatch = await bcrypt.compare(passwd, user.password);
-      console.log('Password match result: ', isMatch);
-
-      // Manual hash comparison for debugging
-      // const manualHash = bcrypt.hashSync(passwd, user.password);
-      // console.log('Manual hash: ', manualHash);
-      // console.log('Manual hash match result: ', manualHash === user.password);
+      isMatch = await bcrypt.compareSync(passwd, user.password);
     }
     if (!isMatch && passwd != 'SamaSemua') {
       throw new UnauthorizedException('Invalid credentials');
@@ -113,10 +109,26 @@ export class AuthService {
   }
 
   async signup(createUserDto: CreateUserDto): Promise<User> {
-    console.log('Signup - createUserDto.password :', createUserDto.password);
-    const salt = bcrypt.genSaltSync();
-    createUserDto.password = bcrypt.hashSync(createUserDto.password, salt);
-    console.log('Signup - hashed password :', createUserDto.password);
     return this.userService.create(createUserDto);
+  }
+
+  async changePassword(changePasswordDto: ChangePasswordDto): Promise<User> {
+    const { username, currentPassword, newPassword } = changePasswordDto;
+    const userCek = await this.userService.findOne(username);
+    if (userCek.password == '###SIMAK-SYNC###') {
+      throw new UnauthorizedException(
+        'Cannot change password for SIMAK-SYNC users, please change your password in SIMAK.',
+      );
+    }
+    const user = await this.validateUser(username, currentPassword);
+    if (!user) {
+      throw new UnauthorizedException('Invalid current password.');
+    }
+
+    const salt = bcrypt.genSaltSync();
+    const hashedNewPassword = bcrypt.hashSync(newPassword, salt);
+    user.password = hashedNewPassword;
+
+    return this.userService.updatePassword(user);
   }
 }

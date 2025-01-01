@@ -59,6 +59,17 @@ export class User {
     nullable: true,
     description: 'Is Activated',
   })
-  @Column({ name: 'is_activated', nullable: true })
-  is_activated: boolean;
+  @Column({ name: 'is_activated', default: true })
+  isActive: boolean;
+
+  @Field(() => Date, {
+    nullable: true,
+    description: 'Password Changed At',
+  })
+  @Column({
+    name: 'password_changed_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  passwordChangedAt: Date;
 }
