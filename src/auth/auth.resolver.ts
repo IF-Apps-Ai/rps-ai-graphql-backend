@@ -1,33 +1,32 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
-import { LoginResponse } from './dto/login-response.dto';
-import { ApolloError } from 'apollo-server-express';
+// import { LoginResponse } from './dto/login-response.dto';
+// import { ApolloError } from 'apollo-server-express';
 import { SigninUserInput } from './dto/signin-user.input';
 import { SigninResponse } from './dto/signin-response';
+import { User } from '../user/entities/user.entity';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 
 @Resolver()
 export class AuthResolver {
   constructor(private authService: AuthService) {}
 
-  @Mutation(() => LoginResponse)
-  async login(
-    @Args('username') username: string,
-    @Args('password') password: string,
-  ): Promise<LoginResponse> {
-    try {
-      return await this.authService.login({ username, password });
-    } catch (e) {
-      // Melemparkan ApolloError dengan kode UNAUTHORIZED
-      throw new ApolloError(e.message, 'UNAUTHORIZED');
-    }
+  @Mutation(() => User)
+  async signup(
+    @Args('createUserInput') createUserDto: CreateUserDto,
+  ): Promise<User> {
+    console.log('Resolver - createUserDto.password :', createUserDto.password);
+    return this.authService.signup(createUserDto);
   }
 
   @Mutation(() => SigninResponse)
   async signin(
     @Args('loginUserInput') loginUserInput: SigninUserInput,
-    // @Context() Context,
   ): Promise<SigninResponse> {
-    // Assume that authService.signin expects an object with username property
+    console.log(
+      'Resolver - signin - loginUserInput.password :',
+      loginUserInput.password,
+    );
     return this.authService.signin(loginUserInput);
   }
 }

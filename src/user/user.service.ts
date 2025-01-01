@@ -4,34 +4,38 @@ import { User } from './entities/user.entity';
 import { DataSource } from 'typeorm';
 import { UserProfile } from './dto/user-profile.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  private userRepository: Repository<User>;
+  private usersRepository: Repository<User>;
 
   constructor(
     @Inject('DATA_SOURCE') // DataSource untuk Database SIMAK
     private dataSource: DataSource,
   ) {
-    this.userRepository = this.dataSource.getRepository(User);
+    this.usersRepository = this.dataSource.getRepository(User);
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(createUserDto);
-    return this.userRepository.save(user);
+    if (createUserDto.password !== '###SIMAK-SYNC###') {
+      const salt = bcrypt.genSaltSync();
+      createUserDto.password = bcrypt.hashSync(createUserDto.password, salt);
+    }
+
+    const user = this.usersRepository.create(createUserDto);
+    return this.usersRepository.save(user);
   }
 
   async findOne(username: string): Promise<User | null> {
-    // console.log('UserService.findOne', username);
-    const result = await this.userRepository.findOne({
+    const result = await this.usersRepository.findOne({
       where: { username: username },
     });
-    // console.log('UserService.findOne', result);
     return result;
   }
 
   async getUser(username: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { username } });
+    const user = await this.usersRepository.findOne({ where: { username } });
     if (!user) {
       throw new NotFoundException(`User ${username} not found.`);
     }
@@ -40,7 +44,7 @@ export class UserService {
 
   async getUserProfile(username: string): Promise<UserProfile> {
     console.log('Profile');
-    const user = await this.userRepository.findOne({ where: { username } });
+    const user = await this.usersRepository.findOne({ where: { username } });
 
     if (!user) {
       throw new Error('User not found');

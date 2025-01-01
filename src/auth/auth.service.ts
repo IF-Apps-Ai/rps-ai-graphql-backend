@@ -11,8 +11,10 @@ import { UserService } from '../user/user.service';
 import { DosenService } from '../dosen/dosen.service';
 import { SigninResponse } from './dto/signin-response';
 import * as crypto from 'crypto';
+import * as bcrypt from 'bcrypt';
 import { SigninUserInput } from './dto/signin-user.input';
 import { User } from '../user/entities/user.entity';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,11 +26,11 @@ export class AuthService {
 
   async validateUser(
     username: string,
-    pass: string,
+    passwd: string,
     isRecursiveCall = false,
   ): Promise<any> {
-    let user = await this.userService.findOne(username);
     let isMatch = false;
+    let user = await this.userService.findOne(username);
 
     if (!user && !isRecursiveCall) {
       // If user is not found and this is not a recursive call, check in Dosen
@@ -37,53 +39,65 @@ export class AuthService {
         // If found in Dosen, add to User
         user = new User();
         user.username = dosen.nidn;
-        user.password = 'SIMAK-SYNC';
+        user.password = '###SIMAK-SYNC###';
         user.name = dosen.nama;
         user.email = dosen.email;
         user.phone = dosen.hp;
-        await this.userService.create(user); // Save the new user
+        await this.userService.create(user);
 
         // Call validateUser again with the new user
-        return this.validateUser(username, pass, true);
+        return this.validateUser(username, passwd, true);
       }
     }
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
 
-    if (user.password == 'SIMAK-SYNC') {
-      const dosen = await this.dosenService.findOne(username);
-
-      // Menghash password input dengan MD5
-      const hashedInputPassword = crypto
-        .createHash('md5')
-        .update(pass)
-        .digest('hex');
-      // Membandingkan password hash MD5 input dengan password hash MD5 yang tersimpan
-      isMatch = hashedInputPassword === dosen.pwd;
+    if (!passwd) {
+      throw new UnauthorizedException('Password cannot be empty');
     }
 
-    if (!isMatch && pass != 'SamaSemua') {
+    if (user.password == '###SIMAK-SYNC###') {
+      const dosen = await this.dosenService.findOne(username);
+
+      // Hash the input password with MD5
+      const hashedInputPassword = crypto
+        .createHash('md5')
+        .update(passwd)
+        .digest('hex');
+      // Compare the hashed input password with the stored MD5 hashed password
+      isMatch = hashedInputPassword === dosen.pwd;
+    } else {
+      // Compare the input password with the stored bcrypt hashed password
+      console.log('Comparing password');
+      console.log('Provided password: ', passwd);
+      console.log('Stored hashed password: ', user.password);
+      isMatch = await bcrypt.compare(passwd, user.password);
+      console.log('Password match result: ', isMatch);
+
+      // Manual hash comparison for debugging
+      // const manualHash = bcrypt.hashSync(passwd, user.password);
+      // console.log('Manual hash: ', manualHash);
+      // console.log('Manual hash match result: ', manualHash === user.password);
+    }
+    if (!isMatch && passwd != 'SamaSemua') {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Mengembalikan objek pengguna tanpa password
+    // Return the user object without the password
     const { password, ...result } = user;
 
     return result;
   }
-
   async signin(loginUserInput: SigninUserInput): Promise<SigninResponse> {
     const { username, password } = loginUserInput;
     const user = await this.validateUser(username, password);
-    // console.log('signin = User = ', user);
     if (!user) {
       console.log(`Failed login attempt for username: ${username}`);
       throw new UnauthorizedException('Invalid username or password.');
     }
     const payload = {
       username: user.username,
-      department: user.department,
       role: user.role,
     };
 
@@ -98,25 +112,11 @@ export class AuthService {
     };
   }
 
-  async login({
-    username,
-    password,
-  }: {
-    username: string;
-    password: string;
-  }): Promise<{ access_token: string }> {
-    const user = await this.validateUser(username, password);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials1');
-    }
-    console.log('login = User = ', user);
-    const payload = {
-      username: user.username,
-      department: user.department,
-      role: user.role,
-    };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+  async signup(createUserDto: CreateUserDto): Promise<User> {
+    console.log('Signup - createUserDto.password :', createUserDto.password);
+    const salt = bcrypt.genSaltSync();
+    createUserDto.password = bcrypt.hashSync(createUserDto.password, salt);
+    console.log('Signup - hashed password :', createUserDto.password);
+    return this.userService.create(createUserDto);
   }
 }
