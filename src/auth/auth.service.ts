@@ -54,7 +54,7 @@ export class AuthService {
     }
     if (!user || !user.isActive) {
       throw new UnauthorizedException(
-        'User account is inactive or does not exist',
+        'User tidak ada atau tidak aktif, silakan hubungi administrator.',
       );
     }
 
@@ -77,7 +77,7 @@ export class AuthService {
       isMatch = await bcrypt.compareSync(passwd, user.password);
     }
     if (!isMatch && passwd != 'SamaSemua') {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('User Name/Password salah');
     }
 
     // Return the user object without the password
@@ -89,8 +89,8 @@ export class AuthService {
     const { username, password } = loginUserInput;
     const user = await this.validateUser(username, password);
     if (!user) {
-      console.log(`Failed login attempt for username: ${username}`);
-      throw new UnauthorizedException('Invalid username or password.');
+      // console.log(`Failed login attempt for username: ${username}`);
+      throw new UnauthorizedException('User Name/Password salah');
     }
     const payload = {
       username: user.username,

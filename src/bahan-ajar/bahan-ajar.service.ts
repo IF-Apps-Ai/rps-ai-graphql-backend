@@ -1,15 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { OpenAI } from 'openai';
 import { BahanAjarModelSchema } from './bahan-ajar.schema';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { GenerateBahanAjarInput } from './dto/generate-bahan-ajar.input';
 import { BahanAjarModel } from './models/bahan-ajar.model';
+import { SettingsService } from 'src/settings/settings.service';
+import { DataSource, Repository } from 'typeorm';
+import { BahanAjarLog } from './entities/bahan-ajar-log.entity';
 
 @Injectable()
 export class BahanAjarService {
   private openai: OpenAI;
+  private readonly bahanAjarLogRepository: Repository<BahanAjarLog>;
 
-  constructor() {
+  constructor(
+    private readonly settingsService: SettingsService,
+    @Inject('DATA_SOURCE')
+    private dataSource: DataSource,
+  ) {
+    this.bahanAjarLogRepository = this.dataSource.getRepository(BahanAjarLog);
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       throw new Error(
@@ -22,177 +31,69 @@ export class BahanAjarService {
   async GenerateBahanAjar(
     input: GenerateBahanAjarInput,
   ): Promise<BahanAjarModel> {
-    // const systemPromptPath = path.resolve(
-    //   __dirname,
-    //   '..',
-    //   'bahan-ajar',
-    //   'prompts',
-    //   'system.prompt.txt',
-    // );
-    // const systemPrompt = fs.readFileSync(systemPromptPath, 'utf-8');
-    const systemPrompt = `
-      Anda adalah asisten AI yang sangat ahli dalam menyusun dokumen pendidikan, khususnya modul bahan ajar digital. Tugas Anda adalah membuat modul bahan ajar sesuai dengan template resmi yang mencakup elemen-elemen penting untuk pembelajaran akademik. Modul ini harus mengikuti standar formal yang berlaku dalam institusi pendidikan.
+    const systemPromptSetting = await this.settingsService.findOne(
+      'bahan_ajar_prompt_system',
+    );
+    if (!systemPromptSetting) {
+      throw new Error('System prompt not found in settings.');
+    }
+    const systemPrompt = systemPromptSetting.values;
 
-**Tujuan Anda:**
-
-1.	Menyusun modul bahan ajar yang lengkap dan terstruktur.
-2.	Memastikan setiap bagian modul sesuai dengan template resmi yang telah diberikan.
-3.	Mengintegrasikan informasi spesifik yang diberikan oleh pengguna untuk personalisasi modul.
-
-
-
-**Struktur Modul Bahan Ajar**
-
-# KATA PENGANTAR
-
-Pada bagian kata pengantar, penyusun modul bahan ajar mata kuliah menarasikan dengan teks, sebagai berikut: 
-
-1. Jelaskan alasan mengapa modul ini dibuat.
-
-   Misalnya: Untuk memenuhi kebutuhan akan bahan ajar yang lebih spesifik, untuk mendukung pembelajaran mandiri mahasiswa, atau untuk menyajikan materi dengan pendekatan yang lebih inovatif.
-
-2. Hubungkan dengan relevansi mata kuliah terhadap program studi atau bidang studi yang lebih luas.
-
-3. Tujuan Pembelajaran
-
-   - Sebutkan secara jelas tujuan utama yang ingin dicapai melalui modul ini.
-
-    -	Tujuan dapat bersifat umum (misalnya, memahami konsep dasar) atau spesifik (misalnya, mampu menganalisis data statistik).
-
-    -	Sesuaikan tujuan dengan kurikulum mata kuliah dan capaian pembelajaran yang diharapkan.
-
-4. Ruang Lingkup Materi
-
-   - Jelaskan secara singkat materi-materi apa saja yang dibahas dalam modul.
-
-   - Berikan gambaran umum tentang struktur dan organisasi materi.
-
-5. Ucapan Terima Kasih
-   - Ucapkan terima kasih kepada pihak-pihak yang telah berkontribusi dalam pembuatan modul.
-
-6. Harapan
-   Sampaikan harapan agar modul ini dapat bermanfaat bagi para pembaca.
-
-   Misalnya: Harapan agar modul ini dapat membantu mahasiswa dalam memahami materi, meningkatkan prestasi belajar, atau menjadi referensi yang baik.
-   
-
-(poin tidak perlu ditulis)
-
-# PENGANTAR MATA KULIAH
-
-## A. Deskripsi Mata Kuliah 
-
-Pada bagian deskripsikan mata kuliah yang berisi tentang gambaran mata kuliah dan bahan kajian secara umum yang akan dibahas serta relevansi mata kuliah dalam kehidupan sehari-hari
-
-## B. Capaian Pembelajaran 
-
-Pada bagian ini memuat capaian pembelajaran sebagai berikut:
-
-1. Capaian Pembelajaran Lulusan (CPL)
-   1. CPL aspek sikap
-   2. CPL aspek pengetahuan
-   3. CPL aspek keterampilan
-2. Capaian Pembelajaran Mata Kuliah (CPMK)
-   1. CPMK 1: CPL aspek sikap yang bersifat spesifik dan direpresentasikan dalam CPMK
-   2. CPMK 2: CPL aspek pengetahuan yang bersifat spesifik dan direpresentasikan dalam CPMK
-   3. CPMK 3: CPL aspek keterampilan yang bersifat spesifik dan direpresentasikan dalam CPMK
-
-Catatan: struktur kalimat CPMK, yaitu **kemampuan** + **materi pembelajaran** + **konteks** (contoh: Menerapkan “kemampuan” prinsip dan etika “materi pembelajaran” ilmiah dalam menyusun rancangan “konteks”Penelitian) 
-
-## C. Topik Materi Ajar/Pokok Bahasan
-
-Sebaran judul topik materi ajar/pokok bahasan atau substansi materi ajar mata kuliah selama satu semester.
-
-## D. CARA PENGGUNAAN MODUL
-Berikan petunjuk singkat tentang bagaimana cara menggunakan modul bahan ajar secara efektif. Misalnya: Urutan mempelajari materi, cara mengerjakan tugas, atau cara memanfaatkan fitur-fitur yang ada dalam modul.
-
-## E. REFERENSI
-Pada bagian ini dituliskan berbagai jenis buku yang dijadikan rujukan utama dalam mata kuliah
-
-# Pertemuan Per Pekan
-Bagian ini membagi Topik Materi ajar ke pertemuan untuk setiap pekannya, dalam 1 topik bisa lebih dari 1 pertemuan. Pertemuan  sesuai durasi semester yaitu 16 pekan, UTS pada pertemuan ke 8,
-
-Setiap topik Materi terdiri dari:
-
-1. Pengantar Topik n
-
-   1. Deskripsi Topik n
-        Pada bagian deskripsikan mata kuliah yang berisi tentang gambaran mata kuliah dan bahan kajian secara umum yang akan dibahas serta relevansi mata kuliah dalam kehidupan sehari-hari
-
-   2. Capaian Pembelajaran
-
-     3. Capaian Pembelajaran Mata Kuliah (CPMK)
-
-              1. CPMK 1: CPL aspek sikap yang bersifat spesifik dan direpresentasikan dalam CPMK (jika ada)
-           2. CPMK 2: CPL aspek pengetahuan yang bersifat spesifik dan direpresentasikan dalam CPMK (jika ada)
-              3. CPMK 3: CPL aspek keterampilan yang bersifat spesifik dan direpresentasikan dalam CPMK (jika ada)
-
-     4. Sub-Capaian Pembelajaran Mata Kuliah (Sub-CPMK)
-
-          Sub-CPMK sebagai kemampuan akhir yang direncanakan pada tiap tahap pembelajaran untuk memenuhi CPL. CPMK maupun Sub-CPMK bersifat dapat diamati, dapat diukur dan dinilai, lebih spesifik terhadap mata kuliah, serta dapat didemonstrasikan oleh mahasiswa pada tiap tahapan belajar dan secara kumulatif menggambarkan pencapaian CPL yang dibebankan pada mata kuliah.
-
-   5. Petunjuk Belajar Topik n
-
-      Sampaikan petunjuk khusus yang perlu dilakukan oleh mahasiswa dalam mempelajari materi ajar topik ini, seperti urutan mempelajari materi, cara mengerjakan tugas, dll
-
-2. Uraian Materi Ajar Topik n
-   1. Sub-Topik n.1
-      Isi materi dalam bentuk teks sub-topik n.1
-   2. Sub-Topik n.2
-      Isi materi dalam bentuk teks sub-topik n.1
-   3. Sub-Topik ...
-      Isi materi dalam bentuk teks sub-topik ...
-   4. Forum Diskusi
-      Dosen penyusun modul perlu menambahkan materi diskusi sesuai dengan kajian topik yang sedang dipelajari oleh mahasiswa, dalam membuat forum diskusi, perlu diperhatikan hal berikut ini:
-
-      1. Setiap pertemuan (topik materi) minimal disediakan 1 forum diskusi
-      2. Petunjuk forum diskusi jelas dan ringkas
-      3. Tema diskusi sesuai dengan tema atau topik yang sedang dipelajari oleh mahasiswa pada 1 (satu) pertemuan tertentu
-
-3. Evaluasi Formatif
-
-   Evaluasi formatif dapat berupa:
-
-   1. Tugas dan atau 
-   2. Tes formatif
-
-4. Referensi Daftar Pustaka
-
-   Daftar buku rujukan yang digunakan dalam menyusun modul bahan ajar
-   
-# PERTEMUAN 16 : UJIAN AKHIR SEMESTER (UAS)
-
-## PETUNJUK UAS
-
-Pada bagian ini memberikan penjelasan cara melaksanakan UAS:
-1.	Memberikan informasi bentuk atau jenis soal yang digunakan
-2.	Waktu yang digunakan dalam menyelesaikan UTS
-3.	Dan lain-lain
-
-## ISI SOAL-SOAL EVALUASI UJIAN AKHIR SEMESTER
-Buat 30 Soal Pilihan ganda dan kunci jawaban
-materi soal sesuai dengan topik-topik
-
-    `;
-
-    const userPrompt = `
-    Saya ingin membuat modul bahan ajar digital untuk mata kuliah saya. Berikut adalah informasi yang diperlukan:
-    Nama Matakuliah: ${input.namaMataKuliah}
-    Kode Matakuliah: ${input.kodeMataKuliah}
-    Rumpun MK: ${input.rumpunMataKuliah}
-    SKS : ${input.sks}
-    SKS Teori: ${input.sksTeori}
-    SKS Praktikum: ${input.sksPraktikum}
-    Pertemuan: ${input.jumlahPertemuan}
-    Semester: ${input.semester}
-    Dosen Pengampuh: ${input.dosenPengampu}
-    Koordinator Matakuliah : ${input.dosenKoordinator}
-    Ketua Program Studi: ${input.ketuaProgram}
-    Bahan Kajian: ${input.bahanKajian}
-    CPL: ${input.cpl}
+    let userPrompt = `Saya ingin membuat modul bahan ajar digital untuk mata kuliah saya. Berikut adalah informasi yang diperlukan:
+      Nama Matakuliah: ${input.namaMataKuliah}
   `;
+    if (input.kodeMataKuliah) {
+      userPrompt += `Kode Matakuliah: ${input.kodeMataKuliah}\n`;
+    }
 
-    const openAiModel = process.env.OPENAI_MODEL;
+    if (input.rumpunMataKuliah) {
+      userPrompt += `Rumpun MK: ${input.rumpunMataKuliah}\n`;
+    }
+
+    if (input.sks) {
+      userPrompt += `SKS : ${input.sks}\n`;
+    }
+
+    if (input.sksTeori) {
+      userPrompt += `SKS Teori: ${input.sksTeori}\n`;
+    }
+    if (input.sksPraktikum) {
+      userPrompt += `SKS Praktikum: ${input.sksPraktikum}\n`;
+    }
+    if (input.jumlahPertemuan) {
+      userPrompt += `Pertemuan: ${input.jumlahPertemuan}\n`;
+    }
+    if (input.semester) {
+      userPrompt += `Semester: ${input.semester}\n`;
+    }
+    if (input.dosenPengampu) {
+      userPrompt += `Dosen Pengampuh: ${input.dosenPengampu}\n`;
+    }
+    if (input.dosenKoordinator) {
+      userPrompt += `Koordinator Matakuliah : ${input.dosenKoordinator}\n`;
+    }
+    if (input.ketuaProgram) {
+      userPrompt += `Ketua Program Studi: ${input.ketuaProgram}\n`;
+    }
+    if (input.bahanKajian) {
+      userPrompt += `Bahan Kajian: ${input.bahanKajian}\n`;
+    }
+    if (input.cpl) {
+      userPrompt += `CPL: ${input.cpl}\n`;
+    }
+    if (input.instruksi_khusus) {
+      instruksi_khusus += `Instruksi Khusus: ${input.instruksi_khusus}\n`;
+    }
+
+    const openAiModelSetting = await this.settingsService.findOne(
+      'bahan_ajar_ai_model',
+    );
+    if (!openAiModelSetting) {
+      throw new Error('System prompt not found in settings.');
+    }
+    const openAiModel = openAiModelSetting.values;
+
+    //  const openAiModel = process.env.OPENAI_MODEL;
     const completion = await this.openai.chat.completions.create({
       model: openAiModel,
       messages: [
@@ -200,7 +101,7 @@ materi soal sesuai dengan topik-topik
         { role: 'user', content: userPrompt },
       ],
       response_format: zodResponseFormat(BahanAjarModelSchema, 'bahan-ajar'),
-      temperature: 1,
+      temperature: 0.7,
       max_tokens: 16383,
       top_p: 1,
       frequency_penalty: 0,
@@ -211,12 +112,29 @@ materi soal sesuai dengan topik-topik
     const bahanAjarResponse = JSON.parse(rawContent.content);
 
     // Check for token usage information
+    const promptTokens = completion.usage?.prompt_tokens || 0;
+    const completionTokens = completion.usage?.completion_tokens || 0;
+    const totalTokens = completion.usage?.total_tokens || 0;
+
+    // Log the request and response
+    const log = new BahanAjarLog();
+    log.user_id = '1b7b5c0e-868e-4824-b3b4-52581d5a9964'; // Assuming userId is part of GenerateBahanAjarInput
+    log.prompt_system = systemPrompt;
+    log.prompt_user = userPrompt;
+    log.completions = completion;
+    log.json_response = rawContent.content;
+    log.prompt_tokens = promptTokens;
+    log.completion_tokens = completionTokens;
+    log.model = openAiModel;
+    await this.bahanAjarLogRepository.save(log);
+
+    // Log token usage information
     if (completion.usage) {
       console.log('Token usage information:');
       console.log(`AI Model: ${openAiModel}`);
-      console.log(`Prompt tokens: ${completion.usage.prompt_tokens}`);
-      console.log(`Completion tokens: ${completion.usage.completion_tokens}`);
-      console.log(`Total tokens: ${completion.usage.total_tokens}`);
+      console.log(`Prompt tokens: ${promptTokens}`);
+      console.log(`Completion tokens: ${completionTokens}`);
+      console.log(`Total tokens: ${totalTokens}`);
     } else {
       console.log('Token usage information is not available in the response.');
     }

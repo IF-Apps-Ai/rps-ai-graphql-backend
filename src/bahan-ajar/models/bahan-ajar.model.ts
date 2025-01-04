@@ -35,6 +35,13 @@ class PertemuanPerPekanItem {
 }
 
 @ObjectType()
+class SoalEvaluasi {
+  @Field(() => String) soal: string;
+  @Field(() => [String]) jawaban: string[];
+  @Field(() => String) kunci_jawaban: string;
+}
+
+@ObjectType()
 export class BahanAjarModel {
   @Field(() => MatakuliahInfo)
   matakuliah_info: MatakuliahInfo;
@@ -46,4 +53,6 @@ export class BahanAjarModel {
   @Field(() => [PertemuanPerPekanItem]) pertemuan_per_pekan: [
     PertemuanPerPekanItem[],
   ];
+  @Field(() => [SoalEvaluasi]) soal_evaluasi: [SoalEvaluasi];
+  @Field(() => String) glosarium: string;
 }

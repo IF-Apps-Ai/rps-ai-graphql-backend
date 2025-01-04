@@ -28,4 +28,6 @@ export class GenerateBahanAjarInput {
   bahanKajian?: string;
   @Field({ nullable: true })
   cpl?: string;
+  @Field({ nullable: true })
+  instruksiKhusus?: string;
 }

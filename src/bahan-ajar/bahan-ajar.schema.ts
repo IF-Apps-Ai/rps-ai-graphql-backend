@@ -34,6 +34,13 @@ const PertemuanPerPekanItemSchema = z.object({
   // uraian_materi_ajar_topik: z.array(z.string()),
 });
 
+// Submodel untuk "SoalEvaluasi"
+const SoalEvaluasiSchema = z.object({
+  soal: z.string(),
+  jawaban: z.array(z.string()),
+  kunci_jawaban: z.string(),
+});
+
 // Model Utama "BahanAjarModel"
 export const BahanAjarModelSchema = z.object({
   matakuliah_info: MatakuliahInfoSchema,
@@ -43,4 +50,6 @@ export const BahanAjarModelSchema = z.object({
   cara_penggunaan_module: z.string(),
   referensi: z.array(z.string()),
   pertemuan_per_pekan: z.array(PertemuanPerPekanItemSchema),
+  soal_evaluasi: z.array(SoalEvaluasiSchema),
+  glosarium: z.string(),
 });

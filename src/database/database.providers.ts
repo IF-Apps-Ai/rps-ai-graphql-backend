@@ -1,6 +1,9 @@
 import { DataSource } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { Dosen } from '../dosen/entities/dosen.entity';
+import { Settings } from '../settings/entities/settings.entity';
+import { BahanAjarLog } from '../bahan-ajar/entities/bahan-ajar-log.entity';
+import { RpsLog } from '../rps/entities/rps-log.entity';
 
 export const DatabaseProviders = [
   {
@@ -25,7 +28,7 @@ export const DatabaseProviders = [
             username: process.env.POSTGRES_USER,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DATABASE,
-            entities: [User],
+            entities: [Settings, BahanAjarLog, RpsLog, User],
             synchronize: false,
             poolSize: 2,
           });
