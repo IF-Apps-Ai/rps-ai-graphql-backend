@@ -9,24 +9,6 @@ const MatakuliahInfoSchema = z.object({
   semester: z.number(),
 });
 
-// Submodel untuk "BaCapaianPembelajaranLulusan"
-const BaCapaianPembelajaranLulusanSchema = z.object({
-  kode: z.array(z.string()),
-  nama: z.array(z.string()),
-});
-
-// Submodel untuk "BaCapaianPembelajaranMataKuliah"
-const BaCapaianPembelajaranMataKuliahSchema = z.object({
-  kode: z.array(z.string()),
-  nama: z.array(z.string()),
-});
-
-// Submodel untuk "BaSubCapaianPembelajaranMataKuliah"
-const BaSubCapaianPembelajaranMataKuliahSchema = z.object({
-  kode: z.array(z.string()),
-  nama: z.array(z.string()),
-});
-
 // Submodel untuk "CapaianPembelajaran"
 const CapaianPembelajaranSchema = z.object({
   capaian_pembelajaran_lulusan: z.array(z.string()),
