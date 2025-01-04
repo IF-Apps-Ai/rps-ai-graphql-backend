@@ -10,28 +10,10 @@ class MatakuliahInfo {
 }
 
 @ObjectType()
-class BaCapaianPembelajaranLulusan {
-  @Field(() => [String]) kode: string[];
-  @Field(() => [String]) nama: string[];
-}
-
-@ObjectType()
-class BaCapaianPembelajaranMataKuliah {
-  @Field(() => [String]) kode: string[];
-  @Field(() => [String]) nama: string[];
-}
-
-@ObjectType()
-class BaSubCapaianPembelajaranMataKuliah {
-  @Field(() => [String]) kode: string[];
-  @Field(() => [String]) nama: string[];
-}
-
-@ObjectType()
 class CapaianPembelajaran {
-  @Field(() => String) capaian_pembelajaran_lulusan: string[];
-  @Field(() => String) capaian_pembelajaran_matakuliah: string[];
-  @Field(() => String) sub_cpmk: string[];
+  @Field(() => [String]) capaian_pembelajaran_lulusan: string[];
+  @Field(() => [String]) capaian_pembelajaran_matakuliah: string[];
+  @Field(() => [String]) sub_cpmk: string[];
 }
 
 @ObjectType()
