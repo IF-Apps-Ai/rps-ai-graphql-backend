@@ -29,7 +29,7 @@ class CapaianPembelajaranMataKuliah {
 }
 
 @ObjectType()
-class KemampuanAkhir {
+class SubCapaianPembelajaranMataKuliah {
   @Field(() => [String]) kode: string[];
   @Field(() => [String]) nama: string[];
 }
@@ -61,8 +61,8 @@ export class RpsModel {
   capaian_pembelajaran_lulusan: CapaianPembelajaranLulusan;
   @Field(() => CapaianPembelajaranMataKuliah)
   capaian_pembelajaran_matakuliah: CapaianPembelajaranMataKuliah;
-  @Field(() => KemampuanAkhir)
-  kemampuan_akhir: KemampuanAkhir;
+  @Field(() => SubCapaianPembelajaranMataKuliah)
+  sub_cpmk: SubCapaianPembelajaranMataKuliah;
   @Field(() => [TopikPerpekanItem]) topik_perpekan_item: TopikPerpekanItem[];
   @Field(() => KomponenPenilaian) komponen_penilaian: KomponenPenilaian;
 }

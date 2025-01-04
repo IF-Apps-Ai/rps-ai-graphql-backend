@@ -8,9 +8,18 @@ import { DatabaseModule } from './database/database.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { DosenModule } from './dosen/dosen.module';
+import { BahanAjarModule } from './bahan-ajar/bahan-ajar.module';
 
 @Module({
-  imports: [CommonModule, UserModule, AuthModule, RpsModule, DatabaseModule, DosenModule],
+  imports: [
+    CommonModule,
+    UserModule,
+    AuthModule,
+    RpsModule,
+    DatabaseModule,
+    DosenModule,
+    BahanAjarModule,
+  ],
   controllers: [AppController],
   providers: [AppResolver, AppService],
 })
