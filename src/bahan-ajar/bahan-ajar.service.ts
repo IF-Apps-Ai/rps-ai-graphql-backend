@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs';
-import * as path from 'path';
 import { OpenAI } from 'openai';
 import { BahanAjarModelSchema } from './bahan-ajar.schema';
 import { zodResponseFormat } from 'openai/helpers/zod';
@@ -178,6 +176,7 @@ materi soal sesuai dengan topik-topik
     `;
 
     const userPrompt = `
+    Saya ingin membuat modul bahan ajar digital untuk mata kuliah saya. Berikut adalah informasi yang diperlukan:
     Nama Matakuliah: ${input.namaMataKuliah}
     Kode Matakuliah: ${input.kodeMataKuliah}
     Rumpun MK: ${input.rumpunMataKuliah}
@@ -201,11 +200,27 @@ materi soal sesuai dengan topik-topik
         { role: 'user', content: userPrompt },
       ],
       response_format: zodResponseFormat(BahanAjarModelSchema, 'bahan-ajar'),
+      temperature: 1,
+      max_tokens: 16383,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
     });
 
     const rawContent = completion.choices[0].message;
-    const rpsResponse = JSON.parse(rawContent.content);
+    const bahanAjarResponse = JSON.parse(rawContent.content);
 
-    return rpsResponse;
+    // Check for token usage information
+    if (completion.usage) {
+      console.log('Token usage information:');
+      console.log(`AI Model: ${openAiModel}`);
+      console.log(`Prompt tokens: ${completion.usage.prompt_tokens}`);
+      console.log(`Completion tokens: ${completion.usage.completion_tokens}`);
+      console.log(`Total tokens: ${completion.usage.total_tokens}`);
+    } else {
+      console.log('Token usage information is not available in the response.');
+    }
+
+    return bahanAjarResponse;
   }
 }

@@ -25,9 +25,13 @@ class PengantarMataKuliah {
 @ObjectType()
 class PertemuanPerPekanItem {
   @Field(() => Int) pekan: number;
+  @Field(() => String) deskripsi_topik: string;
+  @Field(() => [String]) cpmk: string[];
   @Field(() => [String]) sub_cpmk: string[];
   @Field(() => [String]) indikator: string[];
   @Field(() => [String]) bahan_kajian: string[];
+  @Field(() => String) petunjuk_belajar_topik: string;
+  // @Field(() => [String]) uraian_materi_ajar_topik: string[];
 }
 
 @ObjectType()
@@ -40,6 +44,6 @@ export class BahanAjarModel {
   @Field(() => String) cara_penggunaan_module: string;
   @Field(() => [String]) referensi: string[];
   @Field(() => [PertemuanPerPekanItem]) pertemuan_per_pekan: [
-    PertemuanPerPekanItem,
+    PertemuanPerPekanItem[],
   ];
 }

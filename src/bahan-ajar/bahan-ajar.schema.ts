@@ -25,9 +25,13 @@ const PengantarMataKuliahSchema = z.object({
 // Submodel untuk "PertemuanPerPekanItem"
 const PertemuanPerPekanItemSchema = z.object({
   pekan: z.number(),
+  deskripsi_topik: z.string(),
+  cpmk: z.array(z.string()),
   sub_cpmk: z.array(z.string()),
   indikator: z.array(z.string()),
   bahan_kajian: z.array(z.string()),
+  petunjuk_belajar_topik: z.string(),
+  // uraian_materi_ajar_topik: z.array(z.string()),
 });
 
 // Model Utama "BahanAjarModel"
