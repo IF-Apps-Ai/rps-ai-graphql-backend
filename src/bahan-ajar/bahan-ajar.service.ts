@@ -81,8 +81,8 @@ export class BahanAjarService {
     if (input.cpl) {
       userPrompt += `CPL: ${input.cpl}\n`;
     }
-    if (input.instruksi_khusus) {
-      instruksi_khusus += `Instruksi Khusus: ${input.instruksi_khusus}\n`;
+    if (input.instruksiKhusus) {
+      userPrompt += `Instruksi Khusus: ${input.instruksiKhusus}\n`;
     }
 
     const openAiModelSetting = await this.settingsService.findOne(
