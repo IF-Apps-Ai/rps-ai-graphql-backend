@@ -9,6 +9,8 @@ export class GenerateBahanAjarInput {
   @Field({ nullable: true })
   rumpunMataKuliah?: string;
   @Field({ nullable: true })
+  programStudi?: string;
+  @Field({ nullable: true })
   sks?: number;
   @Field({ nullable: true })
   sksTeori?: number;

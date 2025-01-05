@@ -49,6 +49,9 @@ export class BahanAjarService {
     if (input.rumpunMataKuliah) {
       userPrompt += `Rumpun MK: ${input.rumpunMataKuliah}\n`;
     }
+    if (input.programStudi) {
+      userPrompt += `Program Studi: ${input.programStudi}\n`;
+    }
 
     if (input.sks) {
       userPrompt += `SKS : ${input.sks}\n`;
