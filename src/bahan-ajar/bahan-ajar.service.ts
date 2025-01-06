@@ -96,6 +96,14 @@ export class BahanAjarService {
     }
     const openAiModel = openAiModelSetting.values;
 
+    const openAiTemperatureSetting = await this.settingsService.findOne(
+      'bahan_ajar_temperature',
+    );
+    if (!openAiTemperatureSetting) {
+      throw new Error('bahan_ajar_temperature not found in settings.');
+    }
+    const openAiTemperature = parseFloat(openAiTemperatureSetting.values); // Ensure temperature is a number
+
     //  const openAiModel = process.env.OPENAI_MODEL;
     const completion = await this.openai.chat.completions.create({
       model: openAiModel,
@@ -104,7 +112,7 @@ export class BahanAjarService {
         { role: 'user', content: userPrompt },
       ],
       response_format: zodResponseFormat(BahanAjarModelSchema, 'bahan-ajar'),
-      temperature: 0.2,
+      temperature: openAiTemperature,
       max_tokens: 16383,
       top_p: 1,
       frequency_penalty: 0,
