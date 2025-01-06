@@ -104,7 +104,7 @@ export class BahanAjarService {
         { role: 'user', content: userPrompt },
       ],
       response_format: zodResponseFormat(BahanAjarModelSchema, 'bahan-ajar'),
-      temperature: 0.7,
+      temperature: 0.2,
       max_tokens: 16383,
       top_p: 1,
       frequency_penalty: 0,
