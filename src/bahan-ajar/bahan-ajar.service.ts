@@ -117,15 +117,22 @@ export class BahanAjarService {
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0,
+      stream: true,
     });
 
-    const rawContent = completion.choices[0].message;
-    const bahanAjarResponse = JSON.parse(rawContent.content);
+    let rawContent = '';
+    for await (const chunk of completion) {
+      const delta = chunk.choices[0]?.delta?.content || '';
+      rawContent += delta;
+    }
 
+    // const rawContent = completion.choices[0].message;
+    // const bahanAjarResponse = JSON.parse(rawContent.content);
+    const bahanAjarResponse = JSON.parse(rawContent);
     // Check for token usage information
-    const promptTokens = completion.usage?.prompt_tokens || 0;
-    const completionTokens = completion.usage?.completion_tokens || 0;
-    const totalTokens = completion.usage?.total_tokens || 0;
+    // const promptTokens = completion.usage?.prompt_tokens || 0;
+    // const completionTokens = completion.usage?.completion_tokens || 0;
+    // const totalTokens = completion.usage?.total_tokens || 0;
 
     // Log the request and response
     const log = new BahanAjarLog();
@@ -133,22 +140,22 @@ export class BahanAjarService {
     log.prompt_system = systemPrompt;
     log.prompt_user = userPrompt;
     log.completions = completion;
-    log.json_response = rawContent.content;
-    log.prompt_tokens = promptTokens;
-    log.completion_tokens = completionTokens;
+    // log.json_response = rawContent.content;
+    // log.prompt_tokens = promptTokens;
+    // log.completion_tokens = completionTokens;
     log.model = openAiModel;
     await this.bahanAjarLogRepository.save(log);
 
     // Log token usage information
-    if (completion.usage) {
-      console.log('Token usage information:');
-      console.log(`AI Model: ${openAiModel}`);
-      console.log(`Prompt tokens: ${promptTokens}`);
-      console.log(`Completion tokens: ${completionTokens}`);
-      console.log(`Total tokens: ${totalTokens}`);
-    } else {
-      console.log('Token usage information is not available in the response.');
-    }
+    // if (completion.usage) {
+    //   console.log('Token usage information:');
+    //   console.log(`AI Model: ${openAiModel}`);
+    //   console.log(`Prompt tokens: ${promptTokens}`);
+    //   console.log(`Completion tokens: ${completionTokens}`);
+    //   console.log(`Total tokens: ${totalTokens}`);
+    // } else {
+    //   console.log('Token usage information is not available in the response.');
+    // }
 
     return bahanAjarResponse;
   }
