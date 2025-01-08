@@ -1,16 +1,27 @@
-// src/user/user.entity.ts
-
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @ObjectType()
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryColumn({ name: 'username' })
+  @PrimaryGeneratedColumn('uuid')
   @Field(() => String, {
     nullable: false,
+    description: 'ID',
+  })
+  id: string;
+
+  @Field(() => String, {
+    nullable: true,
     description: 'Username',
   })
+  @Column({ name: 'username', unique: true, nullable: true })
   username: string;
 
   @Field(() => String, {
@@ -31,14 +42,14 @@ export class User {
     nullable: true,
     description: 'Email',
   })
-  @Column({ name: 'email', nullable: true })
+  @Column({ name: 'email', unique: true, nullable: true })
   email: string;
 
   @Field(() => String, {
     nullable: true,
     description: 'Phone',
   })
-  @Column({ name: 'phone', nullable: true })
+  @Column({ name: 'phone', unique: true, nullable: true })
   phone: string;
 
   @Field(() => String, {
@@ -55,6 +66,20 @@ export class User {
   @Column({ name: 'role', nullable: true })
   role: string;
 
+  @Field(() => String, {
+    nullable: true,
+    description: 'Created By',
+  })
+  @Column({ name: 'created_by', nullable: true })
+  createdBy: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Updated By',
+  })
+  @Column({ name: 'updated_by', nullable: true })
+  updatedBy: string;
+
   @Field(() => Boolean, {
     nullable: true,
     description: 'Is Activated',
@@ -68,8 +93,30 @@ export class User {
   })
   @Column({
     name: 'password_changed_at',
-    type: 'timestamp',
+    type: 'timestamp with time zone',
     default: () => 'CURRENT_TIMESTAMP',
   })
   passwordChangedAt: Date;
+
+  @Field(() => Date, {
+    nullable: true,
+    description: 'Created At',
+  })
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamp with time zone',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: Date;
+
+  @Field(() => Date, {
+    nullable: true,
+    description: 'Updated At',
+  })
+  @UpdateDateColumn({
+    name: 'updated_at',
+    type: 'timestamp with time zone',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  updatedAt: Date;
 }

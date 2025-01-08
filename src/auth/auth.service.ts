@@ -1,3 +1,4 @@
+import { ID } from '@nestjs/graphql';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // src/auth/auth.service.ts
 
@@ -92,10 +93,14 @@ export class AuthService {
       // console.log(`Failed login attempt for username: ${username}`);
       throw new UnauthorizedException('User Name/Password salah');
     }
+    console.log(`User ${username} logged in successfully`);
+    console.log(user);
     const payload = {
+      id: user.id,
       username: user.username,
       role: user.role,
     };
+    console.log(payload);
 
     const access_token = await this.jwtService.sign({
       payload,

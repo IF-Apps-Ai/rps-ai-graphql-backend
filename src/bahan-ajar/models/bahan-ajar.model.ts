@@ -1,5 +1,7 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 
+
+
 @ObjectType()
 class MatakuliahInfo {
   @Field() kode: string;
@@ -17,7 +19,7 @@ class CapaianPembelajaran {
 }
 
 @ObjectType()
-class PengantarMataKuliah {
+class PengantarMataKuliahx {
   @Field(() => String) deskripsi_maata_kuliah: string;
   @Field(() => CapaianPembelajaran) capaian_pembelajaran: CapaianPembelajaran;
 }
@@ -46,7 +48,7 @@ export class BahanAjarModel {
   @Field(() => MatakuliahInfo)
   matakuliah_info: MatakuliahInfo;
   @Field(() => String) kata_pengantar: string;
-  @Field(() => PengantarMataKuliah) pengantar_matakuliah: PengantarMataKuliah;
+  @Field(() => PengantarMataKuliahx) pengantar_matakuliah: PengantarMataKuliahx;
   @Field(() => [String]) topik_materi_ajar: string[];
   @Field(() => String) cara_penggunaan_module: string;
   @Field(() => [String]) referensi: string[];
@@ -55,4 +57,18 @@ export class BahanAjarModel {
   ];
   @Field(() => [SoalEvaluasi]) soal_evaluasi: [SoalEvaluasi];
   @Field(() => String) glosarium: string;
+}
+
+@ObjectType()
+export class PengantarMatakuliah {
+  @Field() kode: string;
+  @Field() nama: string;
+  @Field() rumpun_mk: string;
+  @Field(() => Int) sks: number;
+  @Field(() => Int) semester: number;
+  @Field(() => String) deskripsi_maata_kuliah: string;
+  @Field(() => CapaianPembelajaran) capaian_pembelajaran: CapaianPembelajaran;
+  @Field(() => [String]) topik_materi_ajar: string[];
+  @Field(() => String) cara_penggunaan_module: string;
+  @Field(() => [String]) referensi: string[];
 }

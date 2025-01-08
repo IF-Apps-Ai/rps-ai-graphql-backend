@@ -17,7 +17,7 @@ const CapaianPembelajaranSchema = z.object({
 });
 
 // Submodel untuk "PengantarMataKuliah"
-const PengantarMataKuliahSchema = z.object({
+const PengantarMataKuliahxSchema = z.object({
   deskripsi_maata_kuliah: z.string(),
   capaian_pembelajaran: CapaianPembelajaranSchema,
 });
@@ -45,7 +45,7 @@ const SoalEvaluasiSchema = z.object({
 export const BahanAjarModelSchema = z.object({
   matakuliah_info: MatakuliahInfoSchema,
   kata_pengantar: z.string(),
-  pengantar_matakuliah: PengantarMataKuliahSchema,
+  pengantar_matakuliah: PengantarMataKuliahxSchema,
   topik_materi_ajar: z.array(z.string()),
   cara_penggunaan_module: z.string(),
   referensi: z.array(z.string()),

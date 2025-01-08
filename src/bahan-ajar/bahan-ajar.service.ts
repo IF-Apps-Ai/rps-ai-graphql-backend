@@ -12,6 +12,10 @@ import { BahanAjarLog } from './entities/bahan-ajar-log.entity';
 export class BahanAjarService {
   private openai: OpenAI;
   private readonly bahanAjarLogRepository: Repository<BahanAjarLog>;
+  private systemPrompt: string;
+  private openAiModel: string;
+  private openAiTemperature: number;
+  private openAiMaxTokens: number;
 
   constructor(
     private readonly settingsService: SettingsService,
@@ -26,6 +30,41 @@ export class BahanAjarService {
       );
     }
     this.openai = new OpenAI({ apiKey });
+    this.initializeSettings();
+  }
+
+  private async initializeSettings() {
+    const systemPromptSetting = await this.settingsService.findOne(
+      'bahan_ajar_prompt_system',
+    );
+    if (!systemPromptSetting) {
+      throw new Error('System prompt not found in settings.');
+    }
+    this.systemPrompt = systemPromptSetting.values;
+
+    const openAiModelSetting = await this.settingsService.findOne(
+      'bahan_ajar_ai_model',
+    );
+    if (!openAiModelSetting) {
+      throw new Error('AI model not found in settings.');
+    }
+    this.openAiModel = openAiModelSetting.values;
+
+    const openAiTemperatureSetting = await this.settingsService.findOne(
+      'bahan_ajar_temperature',
+    );
+    if (!openAiTemperatureSetting) {
+      throw new Error('Temperature not found in settings.');
+    }
+    this.openAiTemperature = parseFloat(openAiTemperatureSetting.values); // Ensure temperature is a number
+
+    const openAiMaxTokensSetting = await this.settingsService.findOne(
+      'bahan_ajar_temperature',
+    );
+    if (!openAiTemperatureSetting) {
+      throw new Error('Max Token not found in settings.');
+    }
+    this.openAiMaxTokens = parseFloat(openAiMaxTokensSetting.values); // Ensure temperature is a number
   }
 
   async GenerateBahanAjar(
@@ -40,12 +79,11 @@ export class BahanAjarService {
     const systemPrompt = systemPromptSetting.values;
 
     let userPrompt = `Saya ingin membuat modul bahan ajar digital untuk mata kuliah saya. Berikut adalah informasi yang diperlukan:
-      Nama Matakuliah: ${input.namaMataKuliah}
-  `;
+      Nama Matakuliah: ${input.namaMataKuliah}\n`;
+
     if (input.kodeMataKuliah) {
       userPrompt += `Kode Matakuliah: ${input.kodeMataKuliah}\n`;
     }
-
     if (input.rumpunMataKuliah) {
       userPrompt += `Rumpun MK: ${input.rumpunMataKuliah}\n`;
     }
@@ -53,10 +91,13 @@ export class BahanAjarService {
       userPrompt += `Program Studi: ${input.programStudi}\n`;
     }
 
+    if (input.fakultas) {
+      userPrompt += `Fakultas: ${input.fakultas}\n`;
+    }
+
     if (input.sks) {
       userPrompt += `SKS : ${input.sks}\n`;
     }
-
     if (input.sksTeori) {
       userPrompt += `SKS Teori: ${input.sksTeori}\n`;
     }
@@ -69,12 +110,23 @@ export class BahanAjarService {
     if (input.semester) {
       userPrompt += `Semester: ${input.semester}\n`;
     }
-    if (input.dosenPengampu) {
-      userPrompt += `Dosen Pengampuh: ${input.dosenPengampu}\n`;
+    if (input.dosenPenysunNama) {
+      userPrompt += `Nama Dosen Penyusun: ${input.dosenPenysunNama}\n`;
     }
-    if (input.dosenKoordinator) {
-      userPrompt += `Koordinator Matakuliah : ${input.dosenKoordinator}\n`;
+    if (input.dosenPenysunNidn) {
+      userPrompt += `NIDN Dosen Penyusun: ${input.dosenPenysunNidn}\n`;
     }
+    if (input.dosenPenysunEmail) {
+      userPrompt += `Email Dosen Penyusun: ${input.dosenPenysunEmail}\n`;
+    }
+    if (input.dosenPenysunWa) {
+      userPrompt += `WhatsApp Dosen Penyusun: ${input.dosenPenysunWa}\n`;
+    }
+
+    if (input.dosenPenysunFoto) {
+      userPrompt += `Foto Dosen Penyusun: ${input.dosenPenysunFoto}\n`;
+    }
+
     if (input.ketuaProgram) {
       userPrompt += `Ketua Program Studi: ${input.ketuaProgram}\n`;
     }
@@ -156,6 +208,263 @@ export class BahanAjarService {
     // } else {
     //   console.log('Token usage information is not available in the response.');
     // }
+
+    return bahanAjarResponse;
+  }
+
+  async GenerateBahanAjarGuard(
+    input: GenerateBahanAjarInput,
+    user: any, // Adjust the type based on your user object
+  ): Promise<BahanAjarModel> {
+    // Fetch the system prompt from settings
+    const systemPromptSetting = await this.settingsService.findOne(
+      'bahan_ajar_prompt_system',
+    );
+    if (!systemPromptSetting) {
+      throw new Error('System prompt not found in settings.');
+    }
+    const systemPrompt = systemPromptSetting.values;
+
+    const openAiModelSetting = await this.settingsService.findOne(
+      'bahan_ajar_ai_model',
+    );
+    if (!openAiModelSetting) {
+      throw new Error('AI model not found in settings.');
+    }
+    const openAiModel = openAiModelSetting.values;
+
+    const openAiTemperatureSetting = await this.settingsService.findOne(
+      'bahan_ajar_temperature',
+    );
+    if (!openAiTemperatureSetting) {
+      throw new Error('bahan_ajar_temperature not found in settings.');
+    }
+    const openAiTemperature = parseFloat(openAiTemperatureSetting.values); // Ensure temperature is a number
+
+    // const openAiModel = `gpt-4o-mini`;
+
+    // Build the user prompt dynamically
+    let userPrompt = `
+    Nama Matakuliah: ${input.namaMataKuliah}
+    `;
+    if (input.kodeMataKuliah) {
+      userPrompt += `Kode Matakuliah: ${input.kodeMataKuliah}\n`;
+    }
+    if (input.rumpunMataKuliah) {
+      userPrompt += `Rumpun MK: ${input.rumpunMataKuliah}\n`;
+    }
+    if (input.programStudi) {
+      userPrompt += `Program Studi: ${input.programStudi}\n`;
+    }
+
+    if (input.fakultas) {
+      userPrompt += `Fakultas: ${input.fakultas}\n`;
+    }
+
+    if (input.sks) {
+      userPrompt += `SKS : ${input.sks}\n`;
+    }
+    if (input.sksTeori) {
+      userPrompt += `SKS Teori: ${input.sksTeori}\n`;
+    }
+    if (input.sksPraktikum) {
+      userPrompt += `SKS Praktikum: ${input.sksPraktikum}\n`;
+    }
+    if (input.jumlahPertemuan) {
+      userPrompt += `Pertemuan: ${input.jumlahPertemuan}\n`;
+    }
+    if (input.semester) {
+      userPrompt += `Semester: ${input.semester}\n`;
+    }
+    if (input.dosenPenysunNama) {
+      userPrompt += `Nama Dosen Penyusun: ${input.dosenPenysunNama}\n`;
+    }
+    if (input.dosenPenysunNidn) {
+      userPrompt += `NIDN Dosen Penyusun: ${input.dosenPenysunNidn}\n`;
+    }
+    if (input.dosenPenysunEmail) {
+      userPrompt += `Email Dosen Penyusun: ${input.dosenPenysunEmail}\n`;
+    }
+    if (input.dosenPenysunWa) {
+      userPrompt += `WhatsApp Dosen Penyusun: ${input.dosenPenysunWa}\n`;
+    }
+
+    if (input.dosenPenysunFoto) {
+      userPrompt += `Foto Dosen Penyusun: ${input.dosenPenysunFoto}\n`;
+    }
+
+    if (input.ketuaProgram) {
+      userPrompt += `Ketua Program Studi: ${input.ketuaProgram}\n`;
+    }
+    if (input.bahanKajian) {
+      userPrompt += `Bahan Kajian: ${input.bahanKajian}\n`;
+    }
+    if (input.cpl) {
+      userPrompt += `CPL: ${input.cpl}\n`;
+    }
+    if (input.instruksiKhusus) {
+      userPrompt += `Instruksi Khusus: ${input.instruksiKhusus}\n`;
+    }
+
+    const completion = await this.openai.chat.completions.create({
+      model: openAiModel,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      response_format: zodResponseFormat(BahanAjarModelSchema, 'bahan-ajar'),
+      temperature: openAiTemperature,
+      max_tokens: 16383,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
+
+    const rawContent = completion.choices[0].message;
+    const bahanAjarResponse = JSON.parse(rawContent.content);
+
+    // Check for token usage information
+    const promptTokens = completion.usage?.prompt_tokens || 0;
+    const completionTokens = completion.usage?.completion_tokens || 0;
+    const totalTokens = completion.usage?.total_tokens || 0;
+
+    // Log the request and response
+    const log = new BahanAjarLog();
+    log.user_id = user.payload.id; // Use user information from the authenticated user
+    log.prompt_system = systemPrompt;
+    log.prompt_user = userPrompt;
+    log.completions = rawContent;
+    // log.json_response = completion; // Store as JSON object
+    log.prompt_tokens = promptTokens;
+    log.completion_tokens = completionTokens;
+    log.model = openAiModel;
+    await this.bahanAjarLogRepository.save(log);
+
+    // Log token usage information
+    if (completion.usage) {
+      console.log('Token usage information:');
+      console.log(`AI Model: ${openAiModel}`);
+      console.log(`Prompt tokens: ${promptTokens}`);
+      console.log(`Completion tokens: ${completionTokens}`);
+      console.log(`Total tokens: ${totalTokens}`);
+    } else {
+      console.log('Token usage information is not available in the response.');
+    }
+
+    return bahanAjarResponse;
+  }
+
+  async GenerateBahanAjarKataPengantar(
+    input: GenerateBahanAjarInput,
+    user: any, // Adjust the type based on your user object
+  ): Promise<BahanAjarModel> {
+    // Build the user prompt dynamically
+    let userPrompt = `
+    Nama Matakuliah: ${input.namaMataKuliah}
+    `;
+    if (input.kodeMataKuliah) {
+      userPrompt += `Kode Matakuliah: ${input.kodeMataKuliah}\n`;
+    }
+    if (input.rumpunMataKuliah) {
+      userPrompt += `Rumpun MK: ${input.rumpunMataKuliah}\n`;
+    }
+    if (input.programStudi) {
+      userPrompt += `Program Studi: ${input.programStudi}\n`;
+    }
+
+    if (input.fakultas) {
+      userPrompt += `Fakultas: ${input.fakultas}\n`;
+    }
+
+    if (input.sks) {
+      userPrompt += `SKS : ${input.sks}\n`;
+    }
+    if (input.sksTeori) {
+      userPrompt += `SKS Teori: ${input.sksTeori}\n`;
+    }
+    if (input.sksPraktikum) {
+      userPrompt += `SKS Praktikum: ${input.sksPraktikum}\n`;
+    }
+    if (input.jumlahPertemuan) {
+      userPrompt += `Pertemuan: ${input.jumlahPertemuan}\n`;
+    }
+    if (input.semester) {
+      userPrompt += `Semester: ${input.semester}\n`;
+    }
+    if (input.dosenPenysunNama) {
+      userPrompt += `Nama Dosen Penyusun: ${input.dosenPenysunNama}\n`;
+    }
+    if (input.dosenPenysunNidn) {
+      userPrompt += `NIDN Dosen Penyusun: ${input.dosenPenysunNidn}\n`;
+    }
+    if (input.dosenPenysunEmail) {
+      userPrompt += `Email Dosen Penyusun: ${input.dosenPenysunEmail}\n`;
+    }
+    if (input.dosenPenysunWa) {
+      userPrompt += `WhatsApp Dosen Penyusun: ${input.dosenPenysunWa}\n`;
+    }
+
+    if (input.dosenPenysunFoto) {
+      userPrompt += `Foto Dosen Penyusun: ${input.dosenPenysunFoto}\n`;
+    }
+
+    if (input.ketuaProgram) {
+      userPrompt += `Ketua Program Studi: ${input.ketuaProgram}\n`;
+    }
+    if (input.bahanKajian) {
+      userPrompt += `Bahan Kajian: ${input.bahanKajian}\n`;
+    }
+    if (input.cpl) {
+      userPrompt += `CPL: ${input.cpl}\n`;
+    }
+    if (input.instruksiKhusus) {
+      userPrompt += `Instruksi Khusus: ${input.instruksiKhusus}\n`;
+    }
+
+    const completion = await this.openai.chat.completions.create({
+      model: this.openAiModel,
+      messages: [
+        { role: 'system', content: this.systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      response_format: zodResponseFormat(BahanAjarModelSchema, 'bahan-ajar'),
+      temperature: this.openAiTemperature,
+      max_tokens: this.openAiMaxTokens,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
+
+    const rawContent = completion.choices[0].message;
+    const bahanAjarResponse = JSON.parse(rawContent.content);
+
+    // Check for token usage information
+    const promptTokens = completion.usage?.prompt_tokens || 0;
+    const completionTokens = completion.usage?.completion_tokens || 0;
+    const totalTokens = completion.usage?.total_tokens || 0;
+
+    // Log the request and response
+    const log = new BahanAjarLog();
+    log.user_id = user.payload.id; // Use user information from the authenticated user
+    log.prompt_system = systemPrompt;
+    log.prompt_user = userPrompt;
+    log.completions = rawContent;
+    // log.json_response = completion; // Store as JSON object
+    log.prompt_tokens = promptTokens;
+    log.completion_tokens = completionTokens;
+    log.model = openAiModel;
+    await this.bahanAjarLogRepository.save(log);
+
+    // Log token usage information
+    if (completion.usage) {
+      console.log('Token usage information:');
+      console.log(`AI Model: ${openAiModel}`);
+      console.log(`Prompt tokens: ${promptTokens}`);
+      console.log(`Completion tokens: ${completionTokens}`);
+      console.log(`Total tokens: ${totalTokens}`);
+    } else {
+      console.log('Token usage information is not available in the response.');
+    }
 
     return bahanAjarResponse;
   }

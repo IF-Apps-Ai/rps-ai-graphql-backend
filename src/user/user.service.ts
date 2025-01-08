@@ -43,16 +43,17 @@ export class UserService {
   }
 
   async getUserProfile(username: string): Promise<UserProfile> {
-    console.log('Profile');
     const user = await this.usersRepository.findOne({ where: { username } });
-
     if (!user) {
       throw new Error('User not found');
     }
 
     return {
+      id: user.id,
       username: user.username,
       name: user.name,
+      email: user.email,
+      phone: user.phone,
       role: user.role,
     };
   }

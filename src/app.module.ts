@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { DosenModule } from './dosen/dosen.module';
 import { BahanAjarModule } from './bahan-ajar/bahan-ajar.module';
 import { SettingsModule } from './settings/settings.module';
+import { ConversationsModule } from './conversations/conversations.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SettingsModule } from './settings/settings.module';
     DosenModule,
     BahanAjarModule,
     SettingsModule,
+    ConversationsModule,
   ],
   controllers: [AppController],
   providers: [AppResolver, AppService],
