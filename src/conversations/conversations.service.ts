@@ -53,14 +53,14 @@ export class ConversationsService {
   }
 
   // Mengupdate judul percakapan
-  async updateConversationTitle(
-    id: string,
-    title: string,
-  ): Promise<Conversation> {
-    const conversation = await this.getConversationById(id);
-    conversation.title = title;
-    return conversation.save();
-  }
+  // async updateConversationTitle(
+  //   id: string,
+  //   title: string,
+  // ): Promise<Conversation> {
+  //   const conversation = await this.getConversationById(id);
+  //   conversation.title = title;
+  //   return conversation.save();
+  // }
 
   // Menghapus percakapan
   async deleteConversation(id: string): Promise<boolean> {
