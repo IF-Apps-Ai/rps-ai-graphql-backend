@@ -1,8 +1,8 @@
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { ConversationsService } from './conversations.service';
 import { Conversation } from './models/conversation.model';
-import { CreateConversationInput } from './dto/create-conversation.input';
-import { AddMessageInput } from './dto/add-message.input';
+import { CreateConversationInput } from './dto/conversation.input';
+import { AddMessageInput } from './dto/message.input';
 import { PaginationInput } from './dto/pagination.input';
 
 @Resolver(() => Conversation)

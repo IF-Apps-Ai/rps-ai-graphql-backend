@@ -244,9 +244,9 @@ export class BahanAjarService {
     // const openAiModel = `gpt-4o-mini`;
 
     // Build the user prompt dynamically
-    let userPrompt = `
-    Nama Matakuliah: ${input.namaMataKuliah}
-    `;
+
+    let userPrompt = `Saya ingin membuat modul bahan ajar digital untuk mata kuliah saya. Berikut adalah informasi yang diperlukan:
+      Nama Matakuliah: ${input.namaMataKuliah}\n`;
     if (input.kodeMataKuliah) {
       userPrompt += `Kode Matakuliah: ${input.kodeMataKuliah}\n`;
     }
@@ -371,11 +371,9 @@ export class BahanAjarService {
     if (input.programStudi) {
       userPrompt += `Program Studi: ${input.programStudi}\n`;
     }
-
     if (input.fakultas) {
       userPrompt += `Fakultas: ${input.fakultas}\n`;
     }
-
     if (input.sks) {
       userPrompt += `SKS : ${input.sks}\n`;
     }
@@ -403,11 +401,9 @@ export class BahanAjarService {
     if (input.dosenPenysunWa) {
       userPrompt += `WhatsApp Dosen Penyusun: ${input.dosenPenysunWa}\n`;
     }
-
     if (input.dosenPenysunFoto) {
       userPrompt += `Foto Dosen Penyusun: ${input.dosenPenysunFoto}\n`;
     }
-
     if (input.ketuaProgram) {
       userPrompt += `Ketua Program Studi: ${input.ketuaProgram}\n`;
     }
@@ -446,19 +442,19 @@ export class BahanAjarService {
     // Log the request and response
     const log = new BahanAjarLog();
     log.user_id = user.payload.id; // Use user information from the authenticated user
-    log.prompt_system = systemPrompt;
+    log.prompt_system = this.systemPrompt;
     log.prompt_user = userPrompt;
     log.completions = rawContent;
     // log.json_response = completion; // Store as JSON object
     log.prompt_tokens = promptTokens;
     log.completion_tokens = completionTokens;
-    log.model = openAiModel;
+    log.model = this.openAiModel;
     await this.bahanAjarLogRepository.save(log);
 
     // Log token usage information
     if (completion.usage) {
       console.log('Token usage information:');
-      console.log(`AI Model: ${openAiModel}`);
+      console.log(`AI Model: ${this.openAiModel}`);
       console.log(`Prompt tokens: ${promptTokens}`);
       console.log(`Completion tokens: ${completionTokens}`);
       console.log(`Total tokens: ${totalTokens}`);

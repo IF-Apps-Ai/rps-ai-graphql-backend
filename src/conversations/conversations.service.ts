@@ -1,27 +1,23 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Conversation } from './interfaces/conversation.interface';
-import { CreateConversationInput } from './dto/create-conversation.input';
-import { AddMessageInput, Role } from './dto/add-message.input';
+import { ConversationInput } from './dto/conversation.input';
+import { MessageInput } from './dto/message.input';
 import { PaginationInput } from './dto/pagination.input';
-// import { OpenAIService } from '../openai/openai.service';
 
 @Injectable()
 export class ConversationsService {
   constructor(
     @InjectModel('Conversation')
     private readonly conversationModel: Model<Conversation>,
-    // private readonly openAIService: OpenAIService,
   ) {}
 
   // Membuat percakapan baru
   async createConversation(
-    createConversationInput: CreateConversationInput,
+    conversationInput: ConversationInput,
   ): Promise<Conversation> {
-    const createdConversation = new this.conversationModel(
-      createConversationInput,
-    );
+    const createdConversation = new this.conversationModel(conversationInput);
     return createdConversation.save();
   }
 
@@ -48,30 +44,10 @@ export class ConversationsService {
   // Menambahkan pesan ke percakapan
   async addMessage(
     conversationId: string,
-    addMessageInput: AddMessageInput,
+    messageInput: MessageInput,
   ): Promise<Conversation> {
     const conversation = await this.getConversationById(conversationId);
-    conversation.messages.push(addMessageInput as any); // Type casting untuk kesesuaian dengan Mongoose
-
-    // Jika pesan dari user, kirim ke OpenAI dan tambahkan respons assistant
-    if (addMessageInput.role === Role.USER) {
-      // Ambil semua pesan untuk konteks
-      const messagesForOpenAI = conversation.messages.map((msg) => ({
-        role: msg.role,
-        content: msg.content,
-      }));
-
-      // Dapatkan respons dari OpenAI
-      const assistantResponse =
-        await this.openAIService.getAssistantResponse(messagesForOpenAI);
-
-      const assistantMessage: AddMessageInput = {
-        role: Role.ASSISTANT,
-        content: assistantResponse,
-      };
-
-      conversation.messages.push(assistantMessage as any);
-    }
+    conversation.messages.push(messageInput as any); // Type casting untuk kesesuaian dengan Mongoose
 
     return conversation.save();
   }
