@@ -21,7 +21,7 @@ export interface Message {
 }
 
 export interface Conversation extends Document {
-  userId?: Types.ObjectId;
+  userId?: string;
   title?: string;
   messages: Message[];
   createdAt: Date;
