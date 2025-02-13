@@ -18,7 +18,6 @@ export class Message {
   @Field()
   role: string;
 
-  // Now using an array of ContentElement instead of a simple string.
   @Field(() => [ContentElement])
   content: ContentElement[];
 
