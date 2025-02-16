@@ -1,36 +1,49 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Conversation } from './interfaces/conversation.interface';
+import { Conversation as ConversationInterface } from './interfaces/conversation.interface';
+import { Conversation as ConversationModel } from './models/conversation.model';
 import { ConversationInput } from './dto/conversation.input';
 import { MessageInput } from './dto/message.input';
-import { PaginationInput } from './dto/pagination.input';
 
 @Injectable()
 export class ConversationsService {
   constructor(
     @InjectModel('Conversation')
-    private readonly conversationModel: Model<Conversation>,
+    private readonly conversationModel: Model<ConversationInterface>,
   ) {}
 
-  // Membuat percakapan baru
-  async createConversation(
-    conversationInput: ConversationInput,
-  ): Promise<Conversation> {
-    const createdConversation = new this.conversationModel(conversationInput);
-    return createdConversation.save();
+  private transformConversation(
+    conversation: ConversationInterface,
+  ): ConversationModel {
+    const convObj = conversation.toObject();
+    return {
+      id: convObj._id.toString(),
+      userId: convObj.userId ? convObj.userId : undefined,
+      title: convObj.title,
+      model: convObj.model,
+      messages: convObj.messages.map((message: any) => ({
+        id: message._id
+          ? message._id.toString()
+          : new Types.ObjectId().toString(),
+        role: message.role,
+        content: message.content,
+        timestamp: message.timestamp,
+        metadata: message.metadata,
+      })),
+      createdAt: convObj.createdAt,
+      updatedAt: convObj.updatedAt,
+    };
   }
 
-  // Mendapatkan semua percakapan dengan pagination
-  async getAllConversations(
-    paginationInput: PaginationInput,
-  ): Promise<Conversation[]> {
-    const { offset, limit } = paginationInput;
-    return this.conversationModel.find().skip(offset).limit(limit).exec();
+  async getConversations(): Promise<ConversationModel[]> {
+    const conversations = await this.conversationModel.find().exec();
+    return conversations.map((conversation) =>
+      this.transformConversation(conversation),
+    );
   }
 
-  // Mendapatkan percakapan berdasarkan ID
-  async getConversationById(id: string): Promise<Conversation> {
+  async getConversationById(id: string): Promise<ConversationModel> {
     if (!Types.ObjectId.isValid(id)) {
       throw new NotFoundException(`Conversation with ID ${id} not found`);
     }
@@ -38,31 +51,51 @@ export class ConversationsService {
     if (!conversation) {
       throw new NotFoundException(`Conversation with ID ${id} not found`);
     }
-    return conversation;
+    return this.transformConversation(conversation);
   }
 
-  // Menambahkan pesan ke percakapan
+  async createConversation(
+    conversationInput: ConversationInput,
+  ): Promise<ConversationModel> {
+    const createdConversation = new this.conversationModel(conversationInput);
+    const savedConversation = await createdConversation.save();
+    return this.transformConversation(savedConversation);
+  }
+
   async addMessage(
     conversationId: string,
     messageInput: MessageInput,
-  ): Promise<Conversation> {
-    const conversation = await this.getConversationById(conversationId);
-    conversation.messages.push(messageInput as any); // Type casting untuk kesesuaian dengan Mongoose
-
-    return conversation.save();
+  ): Promise<ConversationModel> {
+    const conversationDoc = await this.conversationModel
+      .findById(conversationId)
+      .exec();
+    if (!conversationDoc) {
+      throw new NotFoundException(
+        `Conversation with ID ${conversationId} not found`,
+      );
+    }
+    const newMessage = {
+      _id: new Types.ObjectId(),
+      ...messageInput,
+    };
+    conversationDoc.messages.push(newMessage as any);
+    const updatedConversation = await conversationDoc.save();
+    return this.transformConversation(updatedConversation);
   }
 
-  // Mengupdate judul percakapan
   async updateConversationTitle(
     id: string,
     title: string,
-  ): Promise<Conversation> {
-    const conversation = await this.getConversationById(id);
-    conversation.title = title;
-    return conversation.save();
+  ): Promise<ConversationModel> {
+    const conversation = await this.conversationModel
+      .findByIdAndUpdate(id, { title }, { new: true })
+      .exec();
+    if (!conversation) {
+      throw new NotFoundException(`Conversation with ID ${id} not found`);
+    }
+    return this.transformConversation(conversation);
   }
 
-  // Menghapus percakapan
   async deleteConversation(id: string): Promise<boolean> {
     const result = await this.conversationModel.findByIdAndDelete(id).exec();
     return !!result;

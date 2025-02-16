@@ -1,7 +1,7 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, ID } from '@nestjs/graphql';
 import { IsEnum, IsString, ValidateNested } from 'class-validator';
-import { MetadataInput } from './metadata.input';
 import { Type } from 'class-transformer';
+import { MetadataInput } from './metadata.input';
 
 export enum Role {
   SYSTEM = 'system',
@@ -10,14 +10,27 @@ export enum Role {
 }
 
 @InputType()
+export class ContentElementInput {
+  @Field()
+  @IsString()
+  type: string;
+
+  @Field()
+  @IsString()
+  text: string;
+}
+
+@InputType()
 export class MessageInput {
+  // Field id tidak diperlukan di sini karena akan di-generate oleh sistem
   @Field()
   @IsEnum(Role)
   role: Role;
 
-  @Field()
-  @IsString()
-  content: string;
+  @Field(() => [ContentElementInput])
+  @ValidateNested({ each: true })
+  @Type(() => ContentElementInput)
+  content: ContentElementInput[];
 
   @Field(() => MetadataInput, { nullable: true })
   @ValidateNested()

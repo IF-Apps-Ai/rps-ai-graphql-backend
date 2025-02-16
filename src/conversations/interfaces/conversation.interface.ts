@@ -1,4 +1,4 @@
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
 
 export interface Metadata {
   request_id: string;
@@ -13,9 +13,15 @@ export interface Metadata {
   timestamp: string;
 }
 
+export interface ContentElement {
+  type: string;
+  text: string;
+}
+
 export interface Message {
+  // ID tidak perlu didefinisikan karena Mongoose menyediakan _id (yang nantinya di-mapping ke id di model GraphQL)
   role: 'system' | 'user' | 'assistant';
-  content: string;
+  content: ContentElement[]; // disesuaikan dengan model (array ContentElement)
   timestamp: Date;
   metadata?: Metadata;
 }
