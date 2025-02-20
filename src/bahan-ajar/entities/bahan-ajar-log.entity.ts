@@ -30,9 +30,11 @@ export class BahanAjarLog {
   @Field(() => String, { nullable: true })
   completions: object;
 
-  @Column({ type: 'text', nullable: true })
-  @Field(() => String, { nullable: true })
-  json_response: string;
+  // @Column({ type: 'text', nullable: true })
+  // @Field(() => String, { nullable: true })
+  // json_response: string;
+  @Column({ type: 'jsonb', nullable: true })
+  json_response: any;
 
   @Column({ type: 'integer', nullable: true })
   @Field(() => Number, { nullable: true })

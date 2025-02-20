@@ -178,13 +178,7 @@ export class BahanAjarService {
       rawContent += delta;
     }
 
-    // const rawContent = completion.choices[0].message;
-    // const bahanAjarResponse = JSON.parse(rawContent.content);
     const bahanAjarResponse = JSON.parse(rawContent);
-    // Check for token usage information
-    // const promptTokens = completion.usage?.prompt_tokens || 0;
-    // const completionTokens = completion.usage?.completion_tokens || 0;
-    // const totalTokens = completion.usage?.total_tokens || 0;
 
     // Log the request and response
     const log = new BahanAjarLog();
@@ -328,17 +322,25 @@ export class BahanAjarService {
     const completionTokens = completion.usage?.completion_tokens || 0;
     const totalTokens = completion.usage?.total_tokens || 0;
 
-    // Log the request and response
-    const log = new BahanAjarLog();
-    log.user_id = user.payload.id; // Use user information from the authenticated user
-    log.prompt_system = systemPrompt;
-    log.prompt_user = userPrompt;
-    log.completions = rawContent;
-    // log.json_response = completion; // Store as JSON object
-    log.prompt_tokens = promptTokens;
-    log.completion_tokens = completionTokens;
-    log.model = openAiModel;
-    await this.bahanAjarLogRepository.save(log);
+    try {
+      // Log the request and response
+      const log = new BahanAjarLog();
+      log.user_id = user.payload.id; // Use user information from the authenticated user
+      log.prompt_system = systemPrompt;
+      log.prompt_user = userPrompt;
+      log.completions = rawContent; // Pastikan rawContent memiliki nilai string sesuai dengan skema Message
+      log.json_response = completion; // Convert the completion object to a string
+      log.prompt_tokens = promptTokens;
+      log.completion_tokens = completionTokens;
+      log.model = openAiModel;
+      await this.bahanAjarLogRepository.save(log);
+    } catch (error) {
+      console.error('Error saat menyimpan log bahan ajar:', error);
+      throw new Error('Gagal menyimpan log bahan ajar');
+    }
+    console.log('Completion :', completion);
+
+    console.log('Completion usage:', completion.usage);
 
     // Log token usage information
     if (completion.usage) {

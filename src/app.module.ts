@@ -11,6 +11,7 @@ import { DosenModule } from './dosen/dosen.module';
 import { BahanAjarModule } from './bahan-ajar/bahan-ajar.module';
 import { SettingsModule } from './settings/settings.module';
 import { ConversationsModule } from './conversations/conversations.module';
+import { CompletionModule } from './completion/completion.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ConversationsModule } from './conversations/conversations.module';
     BahanAjarModule,
     SettingsModule,
     ConversationsModule,
+    CompletionModule,
   ],
   controllers: [AppController],
   providers: [AppResolver, AppService],
