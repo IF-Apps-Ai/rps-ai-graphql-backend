@@ -1,12 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { OpenAI } from 'openai';
-import { BahanAjarModelSchema } from './bahan-ajar.schema';
+import { BahanAjarModelSchema } from './schemas/bahan-ajar.schema';
+import { BahanAjarModelBaseSchema } from './schemas/bahan-ajar.base.schema';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { GenerateBahanAjarInput } from './dto/generate-bahan-ajar.input';
 import { BahanAjarModel } from './models/bahan-ajar.model';
-import { SettingsService } from 'src/settings/settings.service';
+import { SettingsService } from '../settings/settings.service';
 import { DataSource, Repository } from 'typeorm';
 import { BahanAjarLog } from './entities/bahan-ajar-log.entity';
+import { BahanAjarBaseModel } from './models/bahan-ajar.base.model';
 
 @Injectable()
 export class BahanAjarService {
@@ -59,12 +61,12 @@ export class BahanAjarService {
     this.openAiTemperature = parseFloat(openAiTemperatureSetting.values); // Ensure temperature is a number
 
     const openAiMaxTokensSetting = await this.settingsService.findOne(
-      'bahan_ajar_temperature',
+      'bahan_ajar_max_token',
     );
     if (!openAiTemperatureSetting) {
       throw new Error('Max Token not found in settings.');
     }
-    this.openAiMaxTokens = parseFloat(openAiMaxTokensSetting.values); // Ensure temperature is a number
+    this.openAiMaxTokens = parseInt(openAiMaxTokensSetting.values); // Ensure temperature is a number
   }
 
   async GenerateBahanAjar(
@@ -356,14 +358,12 @@ export class BahanAjarService {
     return bahanAjarResponse;
   }
 
-  async GenerateBahanAjarKataPengantar(
+  async GenerateBahanAjarBase(
     input: GenerateBahanAjarInput,
     user: any, // Adjust the type based on your user object
-  ): Promise<BahanAjarModel> {
+  ): Promise<BahanAjarBaseModel> {
     // Build the user prompt dynamically
-    let userPrompt = `
-    Nama Matakuliah: ${input.namaMataKuliah}
-    `;
+    let userPrompt = `Nama Matakuliah: ${input.namaMataKuliah}\n`;
     if (input.kodeMataKuliah) {
       userPrompt += `Kode Matakuliah: ${input.kodeMataKuliah}\n`;
     }
@@ -425,7 +425,10 @@ export class BahanAjarService {
         { role: 'system', content: this.systemPrompt },
         { role: 'user', content: userPrompt },
       ],
-      response_format: zodResponseFormat(BahanAjarModelSchema, 'bahan-ajar'),
+      response_format: zodResponseFormat(
+        BahanAjarModelBaseSchema,
+        'bahan-ajar',
+      ),
       temperature: this.openAiTemperature,
       max_tokens: this.openAiMaxTokens,
       top_p: 1,
@@ -441,17 +444,25 @@ export class BahanAjarService {
     const completionTokens = completion.usage?.completion_tokens || 0;
     const totalTokens = completion.usage?.total_tokens || 0;
 
-    // Log the request and response
-    const log = new BahanAjarLog();
-    log.user_id = user.payload.id; // Use user information from the authenticated user
-    log.prompt_system = this.systemPrompt;
-    log.prompt_user = userPrompt;
-    log.completions = rawContent;
-    // log.json_response = completion; // Store as JSON object
-    log.prompt_tokens = promptTokens;
-    log.completion_tokens = completionTokens;
-    log.model = this.openAiModel;
-    await this.bahanAjarLogRepository.save(log);
+    try {
+      // Log the request and response
+      const log = new BahanAjarLog();
+      log.user_id = user.payload.id; // Use user information from the authenticated user
+      log.prompt_system = this.systemPrompt;
+      log.prompt_user = userPrompt;
+      log.completions = rawContent; // Pastikan rawContent memiliki nilai string sesuai dengan skema Message
+      log.json_response = completion; // Convert the completion object to a string
+      log.prompt_tokens = promptTokens;
+      log.completion_tokens = completionTokens;
+      log.model = this.openAiModel;
+      await this.bahanAjarLogRepository.save(log);
+    } catch (error) {
+      console.error('Error saat menyimpan log bahan ajar:', error);
+      throw new Error('Gagal menyimpan log bahan ajar');
+    }
+    console.log('Completion :', completion);
+
+    console.log('Completion usage:', completion.usage);
 
     // Log token usage information
     if (completion.usage) {

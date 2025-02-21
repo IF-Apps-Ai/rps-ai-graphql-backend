@@ -5,6 +5,7 @@ import { GenerateBahanAjarInput } from './dto/generate-bahan-ajar.input';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { BahanAjarBaseModel } from './models/bahan-ajar.base.model';
 
 @Resolver()
 export class BahanAjarResolver {
@@ -25,5 +26,15 @@ export class BahanAjarResolver {
   ): Promise<BahanAjarModel> {
     console.log('Authenticated user:', user); // Access user information here
     return this.bahanAjarService.GenerateBahanAjarGuard(input, user);
+  }
+
+  @Mutation(() => BahanAjarBaseModel)
+  @UseGuards(GqlAuthGuard)
+  async generateBahanAjarBase(
+    @Args('input') input: GenerateBahanAjarInput,
+    @CurrentUser() user: any, // Adjust the type based on your user object
+  ): Promise<BahanAjarBaseModel> {
+    console.log('Authenticated user:', user); // Access user information here
+    return this.bahanAjarService.GenerateBahanAjarBase(input, user);
   }
 }

@@ -1,7 +1,5 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 
-
-
 @ObjectType()
 class MatakuliahInfo {
   @Field() kode: string;
@@ -19,7 +17,7 @@ class CapaianPembelajaran {
 }
 
 @ObjectType()
-class PengantarMataKuliahx {
+class PengantarMataKuliah {
   @Field(() => String) deskripsi_maata_kuliah: string;
   @Field(() => CapaianPembelajaran) capaian_pembelajaran: CapaianPembelajaran;
 }
@@ -48,7 +46,7 @@ export class BahanAjarModel {
   @Field(() => MatakuliahInfo)
   matakuliah_info: MatakuliahInfo;
   @Field(() => String) kata_pengantar: string;
-  @Field(() => PengantarMataKuliahx) pengantar_matakuliah: PengantarMataKuliahx;
+  @Field(() => PengantarMataKuliah) pengantar_matakuliah: PengantarMataKuliah;
   @Field(() => [String]) topik_materi_ajar: string[];
   @Field(() => String) cara_penggunaan_module: string;
   @Field(() => [String]) referensi: string[];
