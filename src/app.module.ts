@@ -12,6 +12,7 @@ import { BahanAjarModule } from './bahan-ajar/bahan-ajar.module';
 import { SettingsModule } from './settings/settings.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { CompletionModule } from './completion/completion.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CompletionModule } from './completion/completion.module';
     SettingsModule,
     ConversationsModule,
     CompletionModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppResolver, AppService],

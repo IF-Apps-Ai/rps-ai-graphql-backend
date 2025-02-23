@@ -9,6 +9,7 @@ import { SettingsService } from '../settings/settings.service';
 import { DataSource, Repository } from 'typeorm';
 import { BahanAjarLog } from './entities/bahan-ajar-log.entity';
 import { BahanAjarBaseModel } from './models/bahan-ajar.base.model';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class BahanAjarService {
@@ -23,6 +24,7 @@ export class BahanAjarService {
     private readonly settingsService: SettingsService,
     @Inject('DATA_SOURCE')
     private dataSource: DataSource,
+    private readonly loggerService: LoggerService,
   ) {
     this.bahanAjarLogRepository = this.dataSource.getRepository(BahanAjarLog);
     const apiKey = process.env.OPENAI_API_KEY;
@@ -460,6 +462,14 @@ export class BahanAjarService {
       console.error('Error saat menyimpan log bahan ajar:', error);
       throw new Error('Gagal menyimpan log bahan ajar');
     }
+
+    try {
+      // Simpan completion ke logger melalui LoggerService
+      await this.loggerService.saveLog(user.payload.id, completion);
+    } catch (error) {
+      console.error('Error saat menyimpan log dengan LoggerService:', error);
+    }
+
     console.log('Completion :', completion);
 
     console.log('Completion usage:', completion.usage);
