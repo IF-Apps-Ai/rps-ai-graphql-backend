@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import * as mongoose from 'mongoose';
 import { User } from '../user/entities/user.entity';
 import { Dosen } from '../dosen/entities/dosen.entity';
 import { Settings } from '../settings/entities/settings.entity';
@@ -101,6 +102,44 @@ export const DatabaseProviders = [
 
           // Wait before retrying
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
+        }
+      }
+    },
+  },
+  {
+    provide: 'MONGODB_CONNECTION',
+    useFactory: async (): Promise<typeof mongoose> => {
+      const maxRetries = process.env.DB_MAX_RETRIES
+        ? parseInt(process.env.DB_MAX_RETRIES)
+        : 5;
+      let retries = 0;
+      const baseDelay = process.env.DB_RETRY_DELAY
+        ? parseInt(process.env.DB_RETRY_DELAY)
+        : 2000; // in milliseconds
+
+      while (retries < maxRetries) {
+        try {
+          const mongoConnection = await mongoose.connect(
+            process.env.LOGGER_MONGO_URI.trim(),
+          );
+          console.log('MongoDB connected successfully');
+          return mongoConnection;
+        } catch (error) {
+          retries += 1;
+          console.error(
+            `MongoDB connection failed (Attempt ${retries}/${maxRetries}):`,
+            error,
+          );
+
+          if (retries >= maxRetries) {
+            console.error('Max retries reached. Exiting application.');
+            process.exit(1);
+          }
+
+          // Exponential backoff before retrying
+          const delay = baseDelay * Math.pow(2, retries - 1);
+          console.log(`Waiting for ${delay}ms before next retry...`);
+          await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }
     },

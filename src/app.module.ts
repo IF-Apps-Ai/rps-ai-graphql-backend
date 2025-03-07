@@ -13,9 +13,15 @@ import { SettingsModule } from './settings/settings.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { CompletionModule } from './completion/completion.module';
 import { LoggerModule } from './logger/logger.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
+    MongooseModule.forRoot(process.env.LOGGER_MONGO_URI.trim(), {
+      connectionName: 'MONGODB_CONNECTION',
+    }),
+    LoggerModule,
+    ConversationsModule,
     CommonModule,
     UserModule,
     AuthModule,

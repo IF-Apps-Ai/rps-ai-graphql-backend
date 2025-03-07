@@ -5,7 +5,10 @@ import { LoggerSchema } from './schemas/logger.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Logger', schema: LoggerSchema }]),
+    MongooseModule.forFeature(
+      [{ name: 'Logger', schema: LoggerSchema }],
+      'MONGODB_CONNECTION',
+    ),
   ],
   providers: [LoggerService],
   exports: [LoggerService],

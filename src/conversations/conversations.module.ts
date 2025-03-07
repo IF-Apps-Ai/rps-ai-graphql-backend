@@ -6,9 +6,10 @@ import { ConversationsResolver } from './conversations.resolver';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: 'Conversation', schema: ConversationSchema },
-    ]),
+    MongooseModule.forFeature(
+      [{ name: 'Conversation', schema: ConversationSchema }],
+      'MONGODB_CONNECTION',
+    ),
   ],
   providers: [ConversationsService, ConversationsResolver],
 })

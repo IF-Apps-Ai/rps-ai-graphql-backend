@@ -5,12 +5,13 @@ import { Conversation as ConversationInterface } from './interfaces/conversation
 import { Conversation as ConversationModel } from './models/conversation.model';
 import { ConversationInput } from './dto/conversation.input';
 import { MessageInput } from './dto/message.input';
+import { Conversation } from './interfaces/conversation.interface';
 
 @Injectable()
 export class ConversationsService {
   constructor(
-    @InjectModel('Conversation')
-    private readonly conversationModel: Model<ConversationInterface>,
+    @InjectModel('Conversation', 'MONGODB_CONNECTION')
+    private readonly conversationModel: Model<Conversation>,
   ) {}
 
   private transformConversation(

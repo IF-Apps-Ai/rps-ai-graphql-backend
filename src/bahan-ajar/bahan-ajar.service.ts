@@ -10,6 +10,8 @@ import { DataSource, Repository } from 'typeorm';
 import { BahanAjarLog } from './entities/bahan-ajar-log.entity';
 import { BahanAjarBaseModel } from './models/bahan-ajar.base.model';
 import { LoggerService } from '../logger/logger.service';
+import { ConversationsService } from '../conversations/conversations.service';
+import { ConversationInput } from '../conversations/dto/conversation.input';
 
 @Injectable()
 export class BahanAjarService {
@@ -25,6 +27,7 @@ export class BahanAjarService {
     @Inject('DATA_SOURCE')
     private dataSource: DataSource,
     private readonly loggerService: LoggerService,
+    private readonly conversationsService: ConversationsService,
   ) {
     this.bahanAjarLogRepository = this.dataSource.getRepository(BahanAjarLog);
     const apiKey = process.env.OPENAI_API_KEY;
@@ -446,6 +449,25 @@ export class BahanAjarService {
     const completionTokens = completion.usage?.completion_tokens || 0;
     const totalTokens = completion.usage?.total_tokens || 0;
 
+    // try {
+    //   // Buat payload conversation yang sesuai dengan schema Conversation
+    //   const conversationInput: ConversationInput = {
+    //     userId: user.payload.id, // pastikan ini sesuai dengan interface ConversationInput
+    //     title: `Conversation for ${input.namaMataKuliah}`,
+    //     model: this.openAiModel,
+    //     messages: [
+    //       { role: 'system', content: systemPrompt },
+    //       { role: 'user', content: userPrompt },
+    //       { role: 'assistant', content: rawContent },
+    //     ],
+    //   };
+
+    //   await this.conversationsService.createConversation(conversationInput);
+    // } catch (error) {
+    //   console.error('Error saat membuat conversation:', error);
+    //   // Jika diperlukan, Anda bisa membiarkan error ini tidak mengganggu alur utama
+    // }
+
     try {
       // Log the request and response
       const log = new BahanAjarLog();
@@ -470,9 +492,9 @@ export class BahanAjarService {
       console.error('Error saat menyimpan log dengan LoggerService:', error);
     }
 
-    console.log('Completion :', completion);
+    // console.log('Completion :', completion);
 
-    console.log('Completion usage:', completion.usage);
+    // console.log('Completion usage:', completion.usage);
 
     // Log token usage information
     if (completion.usage) {
