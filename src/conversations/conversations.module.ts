@@ -12,5 +12,6 @@ import { ConversationsResolver } from './conversations.resolver';
     ),
   ],
   providers: [ConversationsService, ConversationsResolver],
+  exports: [ConversationsService],
 })
 export class ConversationsModule {}
