@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { BahanAjarService } from './bahan-ajar.service';
 import { BahanAjarModel } from './models/bahan-ajar.model';
 import { GenerateBahanAjarInput } from './dto/generate-bahan-ajar.input';
@@ -30,11 +30,14 @@ export class BahanAjarResolver {
 
   @Mutation(() => BahanAjarBaseModel)
   @UseGuards(GqlAuthGuard)
-  async generateBahanAjarBase(
+  async GenerateBahanAjarBase(
     @Args('input') input: GenerateBahanAjarInput,
-    @CurrentUser() user: any, // Adjust the type based on your user object
+    @CurrentUser() user: any, // Dekorator untuk mengisi user secara otomatis
   ): Promise<BahanAjarBaseModel> {
-    console.log('Authenticated user:', user); // Access user information here
-    return this.bahanAjarService.GenerateBahanAjarBase(input, user);
+    const result = await this.bahanAjarService.GenerateBahanAjarBase(
+      input,
+      user,
+    );
+    return { ...result.content, id: result.id };
   }
 }

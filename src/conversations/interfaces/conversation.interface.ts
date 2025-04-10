@@ -8,8 +8,7 @@ export interface Metadata {
   top_p: number;
   frequency_penalty: number;
   presence_penalty: number;
-  prompt_tokens_used: number;
-  completion_tokens_used: number;
+  usage?: any;
   timestamp: string;
 }
 

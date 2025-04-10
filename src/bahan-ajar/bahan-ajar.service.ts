@@ -367,7 +367,7 @@ export class BahanAjarService {
   async GenerateBahanAjarBase(
     input: GenerateBahanAjarInput,
     user: any, // Adjust the type based on your user object
-  ): Promise<BahanAjarBaseModel> {
+  ): Promise<{ id: string; content: BahanAjarBaseModel }> {
     // Build the user prompt dynamically
     let userPrompt = `Nama Matakuliah: ${input.namaMataKuliah}\n`;
     if (input.kodeMataKuliah) {
@@ -425,6 +425,8 @@ export class BahanAjarService {
       userPrompt += `Instruksi Khusus: ${input.instruksiKhusus}\n`;
     }
 
+    console.log('User :', user);
+
     const completion = await this.openai.chat.completions.create({
       model: this.openAiModel,
       messages: [
@@ -449,8 +451,22 @@ export class BahanAjarService {
     const promptTokens = completion.usage?.prompt_tokens || 0;
     const completionTokens = completion.usage?.completion_tokens || 0;
     const totalTokens = completion.usage?.total_tokens || 0;
+    const requestId = completion.id;
 
+    // Simpan Conversation ke database
+    let conversation;
     try {
+      const metadata = {
+        request_id: requestId,
+        model: `${this.openAiModel} (${completion.model})`,
+        temperature: this.openAiTemperature,
+        max_completion_tokens: this.openAiMaxTokens,
+        top_p: 1, // ganti nilai jika diperlukan
+        frequency_penalty: 0, // ganti nilai jika diperlukan
+        presence_penalty: 0, // ganti nilai jika diperlukan
+        usage: completion.usage,
+        timestamp: new Date().toISOString(),
+      };
       const conversationInput: ConversationInput = {
         userId: user.payload.id,
         title: `Conversation for ${input.namaMataKuliah}`,
@@ -475,11 +491,13 @@ export class BahanAjarService {
                     : rawContent.content,
               },
             ],
+            metadata, // Sisipkan metadata yang sudah disiapkan
           },
         ],
       };
 
-      await this.conversationsService.createConversation(conversationInput);
+      conversation =
+        await this.conversationsService.createConversation(conversationInput);
     } catch (error) {
       console.error('Error saat membuat conversation:', error);
       // Jika diperlukan, Anda bisa membiarkan error ini tidak mengganggu alur utama
@@ -487,6 +505,7 @@ export class BahanAjarService {
 
     try {
       // Log the request and response
+      console.log('User:', user);
       const log = new BahanAjarLog();
       log.user_id = user.payload.id; // Use user information from the authenticated user
       log.prompt_system = this.systemPrompt;
@@ -509,10 +528,6 @@ export class BahanAjarService {
       console.error('Error saat menyimpan log dengan LoggerService:', error);
     }
 
-    // console.log('Completion :', completion);
-
-    // console.log('Completion usage:', completion.usage);
-
     // Log token usage information
     if (completion.usage) {
       console.log('Token usage information:');
@@ -524,6 +539,9 @@ export class BahanAjarService {
       console.log('Token usage information is not available in the response.');
     }
 
-    return bahanAjarResponse;
+    return {
+      id: conversation ? conversation.id : requestId,
+      content: bahanAjarResponse,
+    };
   }
 }

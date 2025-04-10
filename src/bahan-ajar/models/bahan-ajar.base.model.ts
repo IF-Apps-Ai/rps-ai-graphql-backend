@@ -18,6 +18,8 @@ class CapaianPembelajaranBase {
 
 @ObjectType()
 export class BahanAjarBaseModel {
+  @Field()
+  id: string;
   @Field(() => MatakuliahInfoBase)
   matakuliah_info: MatakuliahInfoBase;
   @Field(() => String) kata_pengantar: string;

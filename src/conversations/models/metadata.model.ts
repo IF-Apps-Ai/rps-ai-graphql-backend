@@ -32,14 +32,6 @@ export class Metadata {
   presence_penalty: number;
 
   @Field()
-  @IsNumber()
-  prompt_tokens_used: number;
-
-  @Field()
-  @IsNumber()
-  completion_tokens_used: number;
-
-  @Field()
   @IsString()
   timestamp: string;
 }
