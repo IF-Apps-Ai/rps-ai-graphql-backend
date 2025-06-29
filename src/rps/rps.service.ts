@@ -35,39 +35,27 @@ export class RpsService {
     Bahan Kajian: ${input.bahanKajian}
     CPL: ${input.cpl}
   `;
-    const systemPrompt1 = `
-    Anda adalah seorang perencana pendidikan yang berspesialisasi dalam desain kurikulum.
-    Anda akan diberikan rincian tentang sebuah mata kuliah, dan tugas Anda adalah membuat Rencana Pembelajaran Semester (RPS) terstruktur dalam format JSON.
-    RPS harus mencakup bagian-bagian berikut:
-    - Mata kuliah (nama, kode, rumpun, sks, semester, tanggal dibuat)
-    - Instruktur (pengampu, koordinator, ketua program)
-    - Deskripsi mata kuliah
-    - Bahan Kajian
-    - Bahan Kajian dapat dikembangkan menjadi topik-topik mingguan
-    - Capaian Pembelajaran Lulusan yang dibebankan pada mata kuliah (CPL)
-    - Capaian Pembelajaran Mata Kuliah (CPMK)
-    - Matakuliah teridiri dari minimal 4-6 CPL dan CPMK bergantung dari besarnya SKS
-    - Kemampuan Akhir Tiap Tahapan Belajar disebut sebagai Sub-CPMK
-    - Sub-CPMK terdiri dari topik, subtopik, dan kegiatan
-    - Sub-CPMK harus memiliki minimal 2-3 kegiatan
-    - SKS merupakan total SKS, SKS Teori, dan SKS Praktikum
-    - Banyaknya bahan kajian tergantung pada jumlah SKS
-    - Topik-topik mingguan dengan topik, subtopik dan kegiatan
-    - Dalam 1 pekan bisa membahas 1-2 subtopik
-    - UTS pada pertemuan ke 8
-    - UAS pada pertemuan ke 16
-    - Komponen penilaian dengan bobot
-    - Capaian Pembelajaran Lulusan yang dibebankan pada mata kuliah (CPL)
 
-    CPL dikelompokkan sesuai dengan domain capaian pembelajaran, seperti berikut:
-	  - Sikap (S): Mengacu pada sikap dan tata nilai yang harus dimiliki lulusan.
-	  - Keterampilan Umum (KU): Merujuk pada keterampilan generik seperti kemampuan komunikasi, berpikir kritis, dan kepemimpinan.
-	  - Keterampilan Khusus (KK): Berisi keterampilan yang spesifik pada bidang keilmuan program studi.
-	  - Pengetahuan (P): Menjelaskan pengetahuan yang harus dikuasai lulusan.
-`;
+    const systemPromptRps = `
+Anda adalah asisten AI yang ahli dalam menyusun Rencana Pembelajaran Semester (RPS) untuk mata kuliah di perguruan tinggi. Tugas Anda adalah menghasilkan dokumen RPS yang lengkap, terstruktur, dan sesuai dengan template baku pendidikan tinggi. 
 
-    const systemPrompt = `
-Anda adalah asisten AI yang ahli dalam menyusun Rencana Pembelajaran Semester (RPS) untuk mata kuliah di perguruan tinggi. Tugas Anda adalah menghasilkan dokumen RPS yang lengkap, terstruktur, dan sesuai dengan template baku pendidikan tinggi. Ikuti instruksi berikut:
+Panduan RPS:
+- Sub-CPMK terdiri dari topik, subtopik, dan kegiatan
+- Sub-CPMK harus memiliki minimal 2-3 kegiatan  
+- SKS merupakan total SKS, SKS Teori, dan SKS Praktikum
+- Banyaknya bahan kajian tergantung pada jumlah SKS
+- Topik-topik mingguan dengan topik, subtopik dan kegiatan
+- Dalam 1 pekan bisa membahas 1-2 subtopik
+- UTS pada pertemuan ke 8
+- UAS pada pertemuan ke 16
+- Komponen penilaian dengan bobot
+- Capaian Pembelajaran Lulusan yang dibebankan pada mata kuliah (CPL)
+
+CPL dikelompokkan sesuai dengan domain capaian pembelajaran:
+- Sikap (S): Mengacu pada sikap dan tata nilai yang harus dimiliki lulusan.
+- Keterampilan Umum (KU): Merujuk pada keterampilan generik seperti kemampuan komunikasi, berpikir kritis, dan kepemimpinan.
+- Keterampilan Khusus (KK): Berisi keterampilan yang spesifik pada bidang keilmuan program studi.
+- Pengetahuan (P): Menjelaskan pengetahuan yang harus dikuasai lulusan.
 
 1. **FORMAT OUTPUT**: 
    - Pastikan dokumen RPS memiliki bagian utama seperti deskripsi mata kuliah, CPL (Capaian Pembelajaran Lulusan), CPMK (Capaian Pembelajaran Mata Kuliah), Sub-CPMK, topik pembelajaran, beban waktu, metode pembelajaran, penilaian, referensi, dan rencana tugas proyek.
@@ -119,7 +107,7 @@ Jika pengguna memberikan detail tertentu, integrasikan informasi tersebut ke dal
     const completion = await this.openai.chat.completions.create({
       model: openAiModel,
       messages: [
-        { role: 'system', content: systemPrompt },
+        { role: 'system', content: systemPromptRps },
         { role: 'user', content: userPrompt },
       ],
       response_format: zodResponseFormat(RpsModelSchema, 'rps'),

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Port Forwarding Guide - RPS AI JS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #4CAF50;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        .port-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .port-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .priority {
+            background: #FF9800;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .priority.high { background: #4CAF50; }
+        .priority.medium { background: #FF9800; }
+        .priority.low { background: #757575; }
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            border-left: 3px solid #4CAF50;
+        }
+        .warning {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #FFC107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .visual-guide {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .arrow {
+            font-size: 2em;
+            color: #4CAF50;
+            margin: 10px 0;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .status-check {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .status-check button {
+            background: #2196F3;
+        }
+        .status-check button:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Port Forwarding Guide</h1>
+        
+        <div class="warning">
+            <strong>⚠️ VS Code Port Forwarding Issue Detected</strong><br>
+            The built-in port forwarding is experiencing issues. Follow this guide to set up manual port forwarding.
+        </div>
+
+        <div class="step">
+            <h3>Step 1: Identify Active Ports</h3>
+            <p>The following ports are currently active and ready for forwarding:</p>
+            
+            <div class="port-card">
+                <div>
+                    <div class="port-number">8080</div>
+                    <div>Python Proxy Server</div>
+                </div>
+                <div class="priority high">RECOMMENDED</div>
+            </div>
+            
+            <div class="port-card">
+                <div>
+                    <div class="port-number">9000</div>
+                    <div>Test Interface</div>
+                </div>
+                <div class="priority medium">USEFUL</div>
+            </div>
+            
+            <div class="port-card">
+                <div>
+                    <div class="port-number">3005</div>
+                    <div>Direct NestJS App</div>
+                </div>
+                <div class="priority low">BACKUP</div>
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Manual Port Forwarding in VS Code</h3>
+            <div class="visual-guide">
+                <p><strong>1.</strong> Look at the bottom panel of VS Code</p>
+                <div class="arrow">↓</div>
+                <p><strong>2.</strong> Click on the <strong>"PORTS"</strong> tab</p>
+                <div class="arrow">↓</div>
+                <p><strong>3.</strong> Click <strong>"Forward a Port"</strong> button</p>
+                <div class="arrow">↓</div>
+                <p><strong>4.</strong> Enter port number: <strong>8080</strong></p>
+                <div class="arrow">↓</div>
+                <p><strong>5.</strong> Repeat for ports 9000 and 3005</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Test Your Forwarded Ports</h3>
+            <p>After forwarding, you'll get URLs like:</p>
+            <div class="code">
+https://shiny-space-telegram-4wv7qrjx5p6hxxx-8080.app.github.dev
+https://shiny-space-telegram-4wv7qrjx5p6hxxx-9000.app.github.dev
+https://shiny-space-telegram-4wv7qrjx5p6hxxx-3005.app.github.dev
+            </div>
+            
+            <p>Test these endpoints:</p>
+            <div class="code">
+# Health check (replace with your actual URL)
+curl https://your-forwarded-url-8080/health
+
+# GraphQL test
+curl -X POST https://your-forwarded-url-8080/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query":"query { sayHello }"}'
+            </div>
+        </div>
+
+        <div class="success">
+            <strong>✅ Success Indicators:</strong>
+            <ul>
+                <li>Health endpoint returns JSON with status "ok"</li>
+                <li>GraphQL returns {"data":{"sayHello":"Hello World!"}}</li>
+                <li>Test interface loads properly</li>
+            </ul>
+        </div>
+
+        <div class="status-check">
+            <h3>🔍 Current Status Check</h3>
+            <button class="btn" onclick="checkStatus()">Check Port Status</button>
+            <button class="btn" onclick="testEndpoints()">Test Endpoints</button>
+            <div id="status-result" style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; display: none;"></div>
+        </div>
+
+        <div class="step">
+            <h3>🆘 Troubleshooting</h3>
+            <p><strong>If port forwarding still doesn't work:</strong></p>
+            <ul>
+                <li>Try using a different browser</li>
+                <li>Clear browser cache and cookies</li>
+                <li>Check if you're behind a corporate firewall</li>
+                <li>Try using the test interface at port 9000</li>
+                <li>Contact your network administrator if in corporate environment</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>🎯 Recommended Access Pattern</h3>
+            <p><strong>For best results:</strong></p>
+            <ol>
+                <li><strong>Primary:</strong> Use port 8080 (Python proxy) for API access</li>
+                <li><strong>Testing:</strong> Use port 9000 for web interface testing</li>
+                <li><strong>Backup:</strong> Use port 3005 for direct access if needed</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            const resultDiv = document.getElementById('status-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '🔍 Checking port status...';
+            
+            try {
+                const response = await fetch('/port-status.json');
+                const data = await response.json();
+                
+                let html = '<h4>📊 Port Status Report</h4>';
+                html += `<p><strong>Last Updated:</strong> ${new Date(data.timestamp).toLocaleString()}</p>`;
+                
+                for (const [port, info] of Object.entries(data.ports)) {
+                    const status = info.status === 'active' ? '✅' : '❌';
+                    html += `<div style="margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px;">`;
+                    html += `<strong>Port ${port}:</strong> ${status} ${info.status.toUpperCase()}<br>`;
+                    html += `<small>${info.description}</small>`;
+                    html += `</div>`;
+                }
+                
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Error checking status: ${error.message}`;
+            }
+        }
+
+        async function testEndpoints() {
+            const resultDiv = document.getElementById('status-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '🧪 Testing endpoints...';
+            
+            const endpoints = [
+                { name: 'Python Proxy Health', url: 'http://localhost:8080/health' },
+                { name: 'Direct App Health', url: 'http://localhost:3005/health' },
+                { name: 'GraphQL Test', url: 'http://localhost:8080/graphql', method: 'POST', body: '{"query":"query { sayHello }"}' }
+            ];
+            
+            let html = '<h4>🧪 Endpoint Test Results</h4>';
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const options = {
+                        method: endpoint.method || 'GET',
+                        headers: endpoint.method === 'POST' ? { 'Content-Type': 'application/json' } : {},
+                        body: endpoint.body || undefined
+                    };
+                    
+                    const start = Date.now();
+                    const response = await fetch(endpoint.url, options);
+                    const time = Date.now() - start;
+                    const data = await response.json();
+                    
+                    html += `<div style="margin: 10px 0; padding: 10px; background: rgba(76,175,80,0.2); border-radius: 5px;">`;
+                    html += `<strong>${endpoint.name}:</strong> ✅ ${response.status} (${time}ms)<br>`;
+                    html += `<small>${JSON.stringify(data).substring(0, 100)}...</small>`;
+                    html += `</div>`;
+                } catch (error) {
+                    html += `<div style="margin: 10px 0; padding: 10px; background: rgba(244,67,54,0.2); border-radius: 5px;">`;
+                    html += `<strong>${endpoint.name}:</strong> ❌ ${error.message}`;
+                    html += `</div>`;
+                }
+            }
+            
+            resultDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

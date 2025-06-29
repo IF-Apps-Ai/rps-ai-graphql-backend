@@ -1,11 +1,13 @@
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { BahanAjarService } from './bahan-ajar.service';
 import { BahanAjarModel } from './models/bahan-ajar.model';
 import { GenerateBahanAjarInput } from './dto/generate-bahan-ajar.input';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, UseInterceptors } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { BahanAjarBaseModel } from './models/bahan-ajar.base.model';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Resolver()
 export class BahanAjarResolver {
@@ -19,7 +21,8 @@ export class BahanAjarResolver {
   }
 
   @Mutation(() => BahanAjarModel)
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard, ThrottlerGuard)
+  @Throttle({ ai: { limit: 5, ttl: 60000 } }) // 5 requests per minute for AI generation
   async generateBahanAjarGuard(
     @Args('input') input: GenerateBahanAjarInput,
     @CurrentUser() user: any, // Adjust the type based on your user object
@@ -29,7 +32,9 @@ export class BahanAjarResolver {
   }
 
   @Mutation(() => BahanAjarBaseModel)
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard, ThrottlerGuard)
+  @UseInterceptors(CacheInterceptor)
+  @Throttle({ ai: { limit: 10, ttl: 60000 } }) // 10 requests per minute for base generation
   async GenerateBahanAjarBase(
     @Args('input') input: GenerateBahanAjarInput,
     @CurrentUser() user: any, // Dekorator untuk mengisi user secara otomatis

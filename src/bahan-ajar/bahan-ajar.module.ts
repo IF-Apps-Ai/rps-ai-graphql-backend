@@ -6,9 +6,16 @@ import { SettingsService } from 'src/settings/settings.service';
 import { LoggerModule } from '../logger/logger.module';
 import { DatabaseModule } from 'src/database/database.module';
 import { ConversationsModule } from 'src/conversations/conversations.module';
+import { CacheModule } from '../common/cache.module';
 
 @Module({
-  imports: [DatabaseModule, SettingsModule, LoggerModule, ConversationsModule],
+  imports: [
+    DatabaseModule,
+    SettingsModule,
+    LoggerModule,
+    ConversationsModule,
+    CacheModule,
+  ],
   providers: [BahanAjarService, BahanAjarResolver, SettingsService],
   exports: [BahanAjarService],
 })

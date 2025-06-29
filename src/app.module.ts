@@ -13,28 +13,45 @@ import { SettingsModule } from './settings/settings.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { CompletionModule } from './completion/completion.module';
 import { LoggerModule } from './logger/logger.module';
+import { HealthModule } from './health/health.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CacheModule } from './common/cache.module';
+import { SecurityModule } from './common/security.module';
+import { GraphQLThrottlerGuard } from './common/guards/graphql-throttler.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.LOGGER_MONGO_URI.trim(), {
-      connectionName: 'MONGODB_CONNECTION',
-    }),
+    ...(process.env.LOGGER_MONGO_URI
+      ? [
+          MongooseModule.forRoot(process.env.LOGGER_MONGO_URI.trim(), {
+            connectionName: 'MONGODB_CONNECTION',
+          }),
+        ]
+      : []),
+    CacheModule,
+    SecurityModule,
+    CommonModule,
+    DatabaseModule,
     LoggerModule,
     ConversationsModule,
-    CommonModule,
     UserModule,
     AuthModule,
     RpsModule,
-    DatabaseModule,
     DosenModule,
     BahanAjarModule,
     SettingsModule,
-    ConversationsModule,
     CompletionModule,
-    LoggerModule,
+    HealthModule,
   ],
   controllers: [AppController],
-  providers: [AppResolver, AppService],
+  providers: [
+    AppResolver,
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: GraphQLThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-06-29T16:47:12Z",
+  "ports": {
+    "3005": {
+      "service": "NestJS Application",
+      "status": "active",
+      "description": "Main application server"
+    },
+    "8080": {
+      "service": "Python Proxy",
+      "status": "active",
+      "description": "Proxy server for VS Code compatibility"
+    },
+    "9000": {
+      "service": "Test Interface",
+      "status": "active",
+      "description": "Web-based testing interface"
+    }
+  },
+  "instructions": {
+    "manual_forwarding": "Use VS Code PORTS tab to forward ports",
+    "recommended_port": "8080",
+    "test_endpoint": "/health"
+  }
+}
