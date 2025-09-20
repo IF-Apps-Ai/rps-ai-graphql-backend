@@ -342,6 +342,27 @@ export class BahanAjarService {
       log.completion_tokens = completionTokens;
       log.model = openAiModel;
       await this.bahanAjarLogRepository.save(log);
+
+      // Enhanced logging with token analytics
+      if (completion.usage) {
+        const requestId = `bahan-ajar-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        await this.loggerService.saveLogWithTokens(
+          user.payload.id,
+          {
+            action: 'generate_bahan_ajar',
+            input: input,
+            result: bahanAjarResponse,
+            success: true,
+          },
+          openAiModel,
+          {
+            prompt_tokens: completion.usage.prompt_tokens,
+            completion_tokens: completion.usage.completion_tokens,
+            total_tokens: completion.usage.total_tokens,
+          },
+          requestId,
+        );
+      }
     } catch (error) {
       console.error('Error saat menyimpan log bahan ajar:', error);
       throw new Error('Gagal menyimpan log bahan ajar');
@@ -516,6 +537,27 @@ export class BahanAjarService {
       log.completion_tokens = completionTokens;
       log.model = this.openAiModel;
       await this.bahanAjarLogRepository.save(log);
+
+      // Enhanced logging with token analytics
+      if (completion.usage) {
+        await this.loggerService.saveLogWithTokens(
+          user.payload.id,
+          {
+            action: 'generate_bahan_ajar_base',
+            input: input,
+            result: bahanAjarResponse,
+            conversation_id: conversation?.id,
+            success: true,
+          },
+          this.openAiModel,
+          {
+            prompt_tokens: completion.usage.prompt_tokens,
+            completion_tokens: completion.usage.completion_tokens,
+            total_tokens: completion.usage.total_tokens,
+          },
+          requestId,
+        );
+      }
     } catch (error) {
       console.error('Error saat menyimpan log bahan ajar:', error);
       throw new Error('Gagal menyimpan log bahan ajar');
